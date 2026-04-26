@@ -1,0 +1,20 @@
+{
+  "name": "BillSpliter",
+  "short_name": "BillSpliter",
+  "description": "Split bills and summarize payments for trips and group meals.",
+  "lang": "th",
+  "start_url": "./BillSpliter_V2.0.1.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F6F3",
+  "theme_color": "#5C6BC0",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
