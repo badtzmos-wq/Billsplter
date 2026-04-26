@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BillSpliter V.2.0.1 (Badtz.mos)</title>
+    <title>BillSpliter (Badtz.mos)</title>
     <meta name="theme-color" content="#5C6BC0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -167,6 +167,16 @@
             font-size: 0.82rem; font-weight: 500;
         }
         .btn-category:hover { background: #7A5F3A; border-color: #7A5F3A; color: #fff; box-shadow: 0 4px 10px rgba(139,111,71,0.2); }
+        .btn-save-shop-flow {
+            width: 100%;
+            min-height: 42px;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+        }
 
         /* Pill buttons (topbar) */
         .btn-pill { border-radius: var(--r-pill) !important; padding: 6px 16px; font-size: 0.82rem; }
@@ -732,7 +742,23 @@
         .receipt-left { flex-grow: 1; min-width: 0; border-right: 2px dashed #e5e7eb; padding-right: 40px; }
         .receipt-center { width: 320px; flex-shrink: 0; border-right: 2px dashed #e5e7eb; padding-right: 40px; display: flex; flex-direction: column; }
         .receipt-right { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
-        .receipt-qr-image { width: 100%; max-width: 450px; height: auto; aspect-ratio: 1/1; object-fit: contain; display: block; border-radius: 12px; margin: 0 auto; }
+        .receipt-qr-frame {
+            width: 100%;
+            max-width: 260px;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        }
+        .receipt-qr-image {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 12px;
+            margin: 0 auto;
+        }
         .receipt-table { table-layout: auto; width: 100%; border-collapse: collapse; }
         .receipt-table th { background-color: #f8fafc; color: #475569; font-size: 0.95rem; border: 1px solid #cbd5e1; white-space: nowrap; padding: 12px 16px; text-align: center; }
         .receipt-table td { border: 1px solid #e2e8f0; font-size: 0.95rem; white-space: nowrap; padding: 12px 16px; }
@@ -998,7 +1024,7 @@
         <div class="app-logo">
             <div class="app-logo-icon"><i class="fa-solid fa-receipt" style="font-size:0.9rem"></i></div>
             <div>
-                <div class="app-logo-text">BillSpliter <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--ink-3);font-weight:400">v2.0.1</span></div>
+                <div class="app-logo-text">BillSpliter <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--ink-3);font-weight:400"> </span></div>
                 <div class="app-logo-sub">by Badtz.mos</div>
             </div>
         </div>
@@ -1075,17 +1101,13 @@
                     </div>
 
                     <!-- Type new shop name -->
-                    <div class="input-group mb-3" style="gap:6px">
+                    <div class="input-group mb-3">
                         <input type="text" class="form-control fw-bold" style="border-color:var(--shop-border);font-size:0.875rem"
                             :value="currentShop"
                             @input="currentShop = $event.target.value"
                             @change="onShopInputChange($event.target.value)"
                             placeholder="พิมพ์ชื่อร้านใหม่..."
-                            @keyup.enter="manualAddShop">
-                        <button class="btn btn-category" style="white-space:nowrap;font-size:0.78rem;padding:0 12px" @click="manualAddShop"
-                            :title="savedShops.includes(currentShop) ? 'บันทึกสมาชิกที่เช็คอิน' : 'เพิ่มร้านใหม่'">
-                            <i class="fa-solid fa-check me-1"></i>{{ savedShops.includes(currentShop) ? 'บันทึก' : 'เพิ่มร้าน' }}
-                        </button>
+                            @keyup.enter="$event.target.blur()">
                     </div>
 
                     <!-- Step 2: Default payer -->
@@ -1115,6 +1137,11 @@
                     <div v-if="activeShopMembers.length > 0" style="margin-top:8px;font-size:0.72rem;color:var(--ink-3);text-align:right">
                         {{ activeShopMembers.length }} คน เช็คอินแล้ว
                     </div>
+                    <button class="btn btn-category btn-save-shop-flow" @click="manualAddShop" :disabled="!currentShop.trim()"
+                        :title="savedShops.includes(currentShop) ? 'บันทึกสมาชิกที่เช็คอิน' : 'เพิ่มร้านใหม่'">
+                        <i class="fa-solid fa-check"></i>
+                        {{ savedShops.includes(currentShop) ? 'บันทึกร้านและสมาชิก' : 'เพิ่มร้านนี้' }}
+                    </button>
                 </div>
 
                 <!-- Add Item Card -->
@@ -1565,7 +1592,7 @@
                         <div class="receipt-right">
                             <h5 class="fw-bold text-primary mb-4 text-center w-100 bg-light py-2 rounded border border-light"><i class="fa-solid fa-qrcode me-2"></i>ช่องทางชำระเงิน</h5>
                             <div v-if="payment.type === 'qrcode'" class="text-center w-100">
-                                <div v-if="payment.qrImage" class="bg-white p-2 border rounded-4 shadow-sm mb-3 mx-auto" style="width: fit-content;"><img :src="payment.qrImage" class="receipt-qr-image"></div>
+                                <div v-if="payment.qrImage" class="receipt-qr-frame mb-3 mx-auto"><img :src="payment.qrImage" class="receipt-qr-image"></div>
                                 <div v-else class="text-muted mb-3 border rounded p-4 bg-light"><i class="fa-solid fa-image text-black-50 mb-2 fs-3"></i><br>ยังไม่ได้อัปโหลด QR Code</div>
                                 <div v-if="payment.name" class="fs-4 fw-bold text-secondary mt-2"><i class="fa-solid fa-user me-2"></i>{{ payment.name }}</div>
                             </div>
@@ -1575,7 +1602,7 @@
                                 <div v-else class="text-muted mb-3">ยังไม่ได้ระบุเลขบัญชี</div>
                                 <div v-if="payment.name" class="fs-4 text-secondary fw-bold"><i class="fa-solid fa-user me-2"></i>{{ payment.name }}</div>
                             </div>
-                            <div class="text-center mt-auto pt-4 text-muted small opacity-50 w-100 border-top mt-4">Create by <b>Badtz.mos</b> | BillSpliter V.2.0.1</div>
+                            <div class="text-center mt-auto pt-4 text-muted small opacity-50 w-100 border-top mt-4">Create by <b>Badtz.mos</b> | BillSpliter</div>
                         </div>
                     </div>
                 </div>
@@ -1754,7 +1781,7 @@
             selectShopFromManager(n) { this.currentShop = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); bootstrap.Modal.getInstance(document.getElementById('shopManagerModal')).hide(); },
             editExpense(ex) { this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customAmounts = {...ex.customAmounts}; this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
             onShopInputChange(n) { if (this.shopMemberMap[n]) { this.activeShopMembers = [...this.shopMemberMap[n]]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); } },
-            manualAddShop() { if(this.currentShop) { if(!this.savedShops.includes(this.currentShop)) this.savedShops.push(this.currentShop); this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.saveData(); this.showToast(); } },
+            manualAddShop() { const shopName = this.currentShop.trim(); if(shopName) { this.currentShop = shopName; if(!this.savedShops.includes(shopName)) this.savedShops.push(shopName); this.shopMemberMap[shopName] = [...this.activeShopMembers]; this.saveData(); this.showToast(); } },
             toggleActiveMembers(all) { this.activeShopMembers = all ? [...this.people] : []; if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
             toggleActiveMember(p) { const idx = this.activeShopMembers.indexOf(p); if(idx > -1) this.activeShopMembers.splice(idx, 1); else this.activeShopMembers.push(p); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
             startEditMember(i) { this.editingMemberIdx = i; this.tempMemberName = this.people[i]; },
