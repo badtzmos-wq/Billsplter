@@ -302,16 +302,146 @@
         }
 
         /* ── Custom sum tracker ── */
+        .custom-split-head {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .custom-split-toolbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .custom-split-title {
+            color: var(--ink-1);
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+        .custom-split-hint {
+            color: var(--ink-3);
+            font-size: 0.72rem;
+            line-height: 1.35;
+            margin-top: 2px;
+        }
+        .custom-mode-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-width: 112px;
+            padding: 3px;
+            gap: 3px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-pill);
+            flex-shrink: 0;
+        }
+        .custom-mode-toggle button {
+            border: 0;
+            background: transparent;
+            color: var(--ink-2);
+            border-radius: var(--r-pill);
+            padding: 5px 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+        .custom-mode-toggle button.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
         .custom-sum-box {
-            font-size: 1rem; font-weight: 600; padding: 8px 12px;
-            border-radius: var(--r-sm); text-align: center; margin-bottom: 10px;
-            font-family: var(--font-mono); letter-spacing: -0.02em;
+            padding: 10px 12px;
+            border-radius: var(--r-md);
+            margin-bottom: 0;
             transition: all 0.2s;
+            display: grid;
+            gap: 8px;
+        }
+        .custom-sum-line,
+        .custom-sum-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .custom-sum-line span,
+        .custom-sum-meta {
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        .custom-sum-line strong {
+            font-family: var(--font-mono);
+            font-size: 0.98rem;
+            letter-spacing: -0.02em;
+        }
+        .custom-progress-track {
+            height: 6px;
+            border-radius: var(--r-pill);
+            background: rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .custom-progress-bar {
+            height: 100%;
+            width: 0;
+            border-radius: inherit;
+            background: currentColor;
+            transition: width 0.18s ease;
         }
         .custom-sum-box.bg-success { background: var(--ok-soft) !important; color: var(--ok) !important; border: 1px solid rgba(76,175,125,0.3); }
         .custom-sum-box.bg-warning { background: var(--warn-soft) !important; color: var(--warn) !important; border: 1px solid rgba(230,145,58,0.3); }
         .custom-sum-box.bg-danger, .custom-sum-box.error { background: var(--danger-soft) !important; color: var(--danger) !important; border: 1px solid rgba(217,95,82,0.3); }
         .custom-sum-box.bg-danger.text-white, .custom-sum-box.error { color: var(--danger) !important; }
+        .custom-member-list {
+            display: grid;
+            gap: 8px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .custom-split-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(132px, 46%);
+            align-items: center;
+            gap: 10px;
+        }
+        .custom-split-person {
+            min-width: 0;
+        }
+        .custom-split-person strong {
+            display: block;
+            color: var(--ink-1);
+            font-size: 0.84rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .custom-split-person small {
+            display: block;
+            color: var(--ink-3);
+            font-size: 0.68rem;
+            margin-top: 2px;
+        }
+        .custom-input-wrap {
+            position: relative;
+        }
+        .custom-input-wrap .form-control {
+            padding-right: 34px;
+            text-align: right;
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+        .custom-input-suffix {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            color: var(--ink-3);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            pointer-events: none;
+        }
 
         /* ── Drag handle ── */
         .drag-handle { cursor: grab; color: var(--ink-3); padding: 0 8px; transition: color 0.15s; }
@@ -734,22 +864,54 @@
 
         /* ── Receipt (unchanged structure, restyled) ── */
         .receipt-container {
-            background: #fff; color: #333; padding: 40px;
+            background: linear-gradient(135deg, #FFFDF9 0%, #FFFFFF 58%, var(--bg) 100%);
+            color: var(--ink-1);
+            padding: 40px;
             width: max-content; min-width: 1400px; height: fit-content;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            box-shadow: 0 14px 40px rgba(28,25,23,0.14);
             transform-origin: top left; display: flex; flex-direction: row; gap: 40px;
         }
-        .receipt-left { flex-grow: 1; min-width: 0; border-right: 2px dashed #e5e7eb; padding-right: 40px; }
-        .receipt-center { width: 320px; flex-shrink: 0; border-right: 2px dashed #e5e7eb; padding-right: 40px; display: flex; flex-direction: column; }
+        .receipt-container .text-primary { color: var(--accent) !important; }
+        .receipt-container .text-warning { color: #F6C453 !important; }
+        .receipt-container .text-success { color: var(--ok) !important; }
+        .receipt-container .text-danger { color: var(--danger) !important; }
+        .receipt-container .text-muted,
+        .receipt-container .text-secondary { color: var(--ink-2) !important; }
+        .receipt-container .bg-light { background: var(--surface-2) !important; }
+        .receipt-container .bg-dark { background: linear-gradient(135deg, var(--ink-1), #2D2926) !important; }
+        .receipt-container .border,
+        .receipt-container .border-light { border-color: var(--border) !important; }
+        .receipt-container h2 {
+            color: var(--ink-1);
+            letter-spacing: -0.04em;
+        }
+        .receipt-container h5 {
+            background: var(--accent-soft) !important;
+            border: 1px solid rgba(92,107,192,0.16) !important;
+            border-radius: 14px !important;
+            color: var(--accent) !important;
+            letter-spacing: -0.01em;
+        }
+        .receipt-left { flex-grow: 1; min-width: 0; border-right: 1px dashed var(--border); padding-right: 40px; }
+        .receipt-center { width: 320px; flex-shrink: 0; border-right: 1px dashed var(--border); padding-right: 40px; display: flex; flex-direction: column; }
+        .receipt-center > .bg-dark {
+            border-radius: 22px !important;
+            box-shadow: 0 12px 26px rgba(28,25,23,0.18) !important;
+        }
+        .receipt-center > .bg-dark small {
+            color: rgba(255,255,255,0.58) !important;
+            letter-spacing: 0.08em;
+        }
         .receipt-right { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
         .receipt-qr-frame {
             width: 100%;
             max-width: 260px;
             background: #fff;
             padding: 10px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
             border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+            box-shadow: var(--shadow-sm);
         }
         .receipt-qr-image {
             width: 100%;
@@ -759,14 +921,65 @@
             border-radius: 12px;
             margin: 0 auto;
         }
-        .receipt-table { table-layout: auto; width: 100%; border-collapse: collapse; }
-        .receipt-table th { background-color: #f8fafc; color: #475569; font-size: 0.95rem; border: 1px solid #cbd5e1; white-space: nowrap; padding: 12px 16px; text-align: center; }
-        .receipt-table td { border: 1px solid #e2e8f0; font-size: 0.95rem; white-space: nowrap; padding: 12px 16px; }
-        .receipt-shop-header { background-color: #dbeafe !important; color: #1e40af; font-weight: 800; text-align: left !important; }
-        .receipt-footer-row td { background-color: #f8f9fa; font-weight: 800 !important; border-bottom: 2px solid #cbd5e1; }
+        .receipt-table {
+            table-layout: auto;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .receipt-table th {
+            background-color: var(--surface-2);
+            color: var(--ink-2);
+            font-size: 0.9rem;
+            font-weight: 700;
+            border: 0;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            padding: 12px 16px;
+            text-align: center;
+        }
+        .receipt-table th:last-child,
+        .receipt-table td:last-child { border-right: 0; }
+        .receipt-table td {
+            background: rgba(255,255,255,0.78);
+            border: 0;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            color: var(--ink-1);
+            font-size: 0.92rem;
+            white-space: nowrap;
+            padding: 12px 16px;
+        }
+        .receipt-shop-header {
+            background-color: var(--shop-soft) !important;
+            color: var(--shop) !important;
+            border-bottom: 1px solid var(--shop-border) !important;
+            font-weight: 800;
+            text-align: left !important;
+        }
+        .receipt-footer-row td {
+            background-color: #FFFCF6 !important;
+            color: var(--ink-1);
+            font-weight: 800 !important;
+            border-bottom: 1px solid var(--shop-border);
+        }
 
-        .net-amount-big { font-size: 1.4rem; font-weight: 800; line-height: 1; }
-        .status-badge { font-size: 0.75rem; padding: 3px 8px; font-weight: bold; margin-left: 4px; vertical-align: middle; }
+        .net-amount-big { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 800; line-height: 1; }
+        .status-badge {
+            font-size: 0.68rem;
+            padding: 4px 8px;
+            font-weight: 700;
+            margin-left: 4px;
+            vertical-align: middle;
+            border: 1px solid transparent;
+        }
+        .receipt-container .badge.bg-success { background: var(--ok-soft) !important; color: var(--ok) !important; border-color: rgba(76,175,125,0.28); }
+        .receipt-container .badge.bg-danger { background: var(--danger-soft) !important; color: var(--danger) !important; border-color: rgba(217,95,82,0.28); }
 
         /* ── Misc ── */
         .cursor-pointer { cursor: pointer; }
@@ -872,6 +1085,16 @@
             .member-chip {
                 padding: 8px 14px;
                 font-size: 0.84rem;
+            }
+            .custom-split-toolbar {
+                flex-direction: column;
+            }
+            .custom-mode-toggle {
+                width: 100%;
+            }
+            .custom-split-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
             }
             .table-wrapper {
                 margin: 0 -4px;
@@ -1182,14 +1405,48 @@
                                     </div>
                                 </div>
                                 <div v-else>
-                                    <div class="custom-sum-box" :class="customSumClass">
-                                        {{ formatNumber(sumCustomAmount) }} / {{ formatNumber(form.price || 0) }}
+                                    <div class="custom-split-head">
+                                        <div class="custom-split-toolbar">
+                                            <div>
+                                                <div class="custom-split-title">ระบุยอดเอง</div>
+                                                <div class="custom-split-hint">ใส่เป็นบาทหรือ % ระบบจะกันไม่ให้เกินยอดรวม</div>
+                                            </div>
+                                            <div class="custom-mode-toggle" role="group" aria-label="โหมดระบุยอด">
+                                                <button type="button" :class="{ active: customInputMode === 'amount' }" @click="setCustomInputMode('amount')">บาท</button>
+                                                <button type="button" :class="{ active: customInputMode === 'percent' }" @click="setCustomInputMode('percent')">%</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="custom-sum-box" :class="customSumClass">
+                                            <div class="custom-sum-line">
+                                                <span>ใช้ไป</span>
+                                                <strong>{{ formatNumber(sumCustomAmount) }} / {{ formatNumber(form.price || 0) }}</strong>
+                                            </div>
+                                            <div class="custom-progress-track">
+                                                <div class="custom-progress-bar" :style="{ width: customProgressWidth }"></div>
+                                            </div>
+                                            <div class="custom-sum-meta">
+                                                <span>เหลือ {{ formatNumber(customRemainingAmount) }}</span>
+                                                <span v-if="customInputMode === 'percent'">เหลือ {{ formatNumber(customRemainingPercent) }}%</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="max-height:220px;overflow-y:auto">
-                                        <div v-for="p in activeShopMembers" :key="p" class="d-flex justify-content-between align-items-center mb-2 pe-1">
-                                            <span style="font-size:0.82rem;font-weight:600;max-width:90px" class="text-truncate">{{ p }}</span>
-                                            <div class="input-group input-group-sm w-50">
-                                                <input type="number" class="form-control text-end" style="font-family:var(--font-mono)" :value="customAmounts[p]" @input="handleCustomInput(p, $event)" placeholder="0">
+
+                                    <div class="custom-member-list">
+                                        <div v-for="p in activeShopMembers" :key="p" class="custom-split-row">
+                                            <div class="custom-split-person">
+                                                <strong>{{ p }}</strong>
+                                                <small v-if="customInputMode === 'percent'">คิดเป็น {{ formatNumber(customAmounts[p] || 0) }} บาท</small>
+                                                <small v-else>ใส่ได้อีกไม่เกิน {{ formatNumber(getCustomAmountLimit(p)) }} บาท</small>
+                                            </div>
+                                            <div class="custom-input-wrap">
+                                                <input v-if="customInputMode === 'amount'" type="number" class="form-control"
+                                                    inputmode="decimal" min="0" step="0.01" :max="getCustomAmountLimit(p)"
+                                                    :value="getCustomAmountDisplay(p)" @input="handleCustomInput(p, $event)" placeholder="0">
+                                                <input v-else type="number" class="form-control"
+                                                    inputmode="decimal" min="0" step="0.01" :max="getCustomPercentLimit(p)"
+                                                    :value="getCustomPercentDisplay(p)" @input="handleCustomPercentInput(p, $event)" placeholder="0">
+                                                <span class="custom-input-suffix">{{ customInputMode === 'amount' ? '฿' : '%' }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1626,7 +1883,7 @@
                 zoomLevel: 1, people: [], currentShop: '', savedShops: [], shopDefaults: {}, activeShopMembers: [],
                 expenses: [], backups: [], currentLoadedId: null, isModified: false,
                 form: { id: null, item: '', price: null, payer: '', consumers: [] },
-                splitMode: 'equal', customAmounts: {},
+                splitMode: 'equal', customInputMode: 'amount', customAmounts: {}, customPercents: {},
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
                 editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {}
@@ -1642,6 +1899,14 @@
         },
         computed: {
             sumCustomAmount() { return Object.values(this.customAmounts).reduce((a, b) => a + (parseFloat(b) || 0), 0); },
+            sumCustomPercent() { return Object.values(this.customPercents).reduce((a, b) => a + (parseFloat(b) || 0), 0); },
+            customRemainingAmount() { return Math.max((parseFloat(this.form.price) || 0) - this.sumCustomAmount, 0); },
+            customRemainingPercent() { return Math.max(100 - this.sumCustomPercent, 0); },
+            customUsedPercent() {
+                const price = parseFloat(this.form.price) || 0;
+                return price > 0 ? Math.min((this.sumCustomAmount / price) * 100, 100) : 0;
+            },
+            customProgressWidth() { return `${Math.max(0, Math.min(this.customUsedPercent, 100))}%`; },
             customSumClass() {
                 const sum = this.sumCustomAmount; const price = this.form.price || 0;
                 if (Math.abs(sum - price) < 0.01 && price > 0) return 'bg-success text-white';
@@ -1697,6 +1962,13 @@
                 }
 
                 return result;
+            }
+        },
+        watch: {
+            'form.price'() {
+                if (this.splitMode !== 'custom') return;
+                if (this.customInputMode === 'percent') this.syncCustomAmountsFromPercents();
+                else this.clampCustomAmountsToPrice();
             }
         },
         methods: {
@@ -1768,6 +2040,8 @@
                         ex.consumers = ex.consumers.filter(p => p !== removed);
                         if(ex.customAmounts) delete ex.customAmounts[removed];
                     });
+                    delete this.customAmounts[removed];
+                    delete this.customPercents[removed];
                     this.saveData();
                 }
             },
@@ -1779,19 +2053,100 @@
             deleteShop(idx) { const s = this.savedShops[idx]; if(confirm(`ลบร้าน "${s}"?`)) { this.savedShops.splice(idx, 1); this.expenses = this.expenses.filter(ex => ex.shop !== s); this.saveData(); this.showToast(); } },
             selectShopInline(n) { this.currentShop = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); },
             selectShopFromManager(n) { this.currentShop = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); bootstrap.Modal.getInstance(document.getElementById('shopManagerModal')).hide(); },
-            editExpense(ex) { this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customAmounts = {...ex.customAmounts}; this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+            editExpense(ex) { this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
             onShopInputChange(n) { if (this.shopMemberMap[n]) { this.activeShopMembers = [...this.shopMemberMap[n]]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); } },
             manualAddShop() { const shopName = this.currentShop.trim(); if(shopName) { this.currentShop = shopName; if(!this.savedShops.includes(shopName)) this.savedShops.push(shopName); this.shopMemberMap[shopName] = [...this.activeShopMembers]; this.saveData(); this.showToast(); } },
-            toggleActiveMembers(all) { this.activeShopMembers = all ? [...this.people] : []; if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
-            toggleActiveMember(p) { const idx = this.activeShopMembers.indexOf(p); if(idx > -1) this.activeShopMembers.splice(idx, 1); else this.activeShopMembers.push(p); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
+            toggleActiveMembers(all) { this.activeShopMembers = all ? [...this.people] : []; this.pruneCustomSplitInputs(); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
+            toggleActiveMember(p) { const idx = this.activeShopMembers.indexOf(p); if(idx > -1) { this.activeShopMembers.splice(idx, 1); delete this.customAmounts[p]; delete this.customPercents[p]; } else this.activeShopMembers.push(p); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
             startEditMember(i) { this.editingMemberIdx = i; this.tempMemberName = this.people[i]; },
             saveEditMember(i) { if(this.tempMemberName) { this.people[i] = this.tempMemberName; this.editingMemberIdx = -1; this.saveData(); } },
-            saveExpense() { const d = { id: this.form.id || Date.now(), shop: this.currentShop, item: this.form.item, price: this.form.price, payer: this.form.payer, consumers: [...this.form.consumers], customSplit: this.splitMode === 'custom', customAmounts: {...this.customAmounts} }; if(this.form.id) { const idx = this.expenses.findIndex(e => e.id === this.form.id); this.expenses[idx] = d; } else this.expenses.push(d); this.resetForm(); this.saveData(); this.showToast(); },
-            resetForm() { this.form = { id: null, item: '', price: null, payer: '', consumers: [...this.activeShopMembers] }; this.editingIndex = null; this.updateFormPayer(); },
+            saveExpense() { const d = { id: this.form.id || Date.now(), shop: this.currentShop, item: this.form.item, price: this.form.price, payer: this.form.payer, consumers: [...this.form.consumers], customSplit: this.splitMode === 'custom', customAmounts: this.getCustomAmountsForSave() }; if(this.form.id) { const idx = this.expenses.findIndex(e => e.id === this.form.id); this.expenses[idx] = d; } else this.expenses.push(d); this.resetForm(); this.saveData(); this.showToast(); },
+            resetForm() { this.form = { id: null, item: '', price: null, payer: '', consumers: [...this.activeShopMembers] }; this.customAmounts = {}; this.customPercents = {}; this.customInputMode = 'amount'; this.editingIndex = null; this.updateFormPayer(); },
             toggleConsumers(all) { this.form.consumers = all ? [...this.activeShopMembers] : []; },
             toggleConsumer(p) { if(this.form.consumers.includes(p)) this.form.consumers = this.form.consumers.filter(x => x !== p); else this.form.consumers.push(p); },
             updateFormPayer() { if(this.shopDefaults[this.currentShop]) this.form.payer = this.shopDefaults[this.currentShop]; },
-            handleCustomInput(p, e) { this.customAmounts[p] = e.target.value === '' ? 0 : parseFloat(e.target.value); },
+            toSplitNumber(v) {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n > 0 ? n : 0;
+            },
+            roundSplitValue(v) { return Math.round((v + Number.EPSILON) * 100) / 100; },
+            setCustomInputMode(mode) {
+                this.customInputMode = mode;
+                if (mode === 'percent') this.syncCustomPercentsFromAmounts();
+                else this.syncCustomAmountsFromPercents();
+            },
+            getCustomAmountDisplay(p) {
+                const value = this.toSplitNumber(this.customAmounts[p]);
+                return value > 0 ? value : '';
+            },
+            getCustomPercentDisplay(p) {
+                const value = this.toSplitNumber(this.customPercents[p]);
+                return value > 0 ? value : '';
+            },
+            getCustomAmountLimit(p) {
+                const price = this.toSplitNumber(this.form.price);
+                const current = this.toSplitNumber(this.customAmounts[p]);
+                const otherTotal = Math.max(this.sumCustomAmount - current, 0);
+                return this.roundSplitValue(Math.max(price - otherTotal, 0));
+            },
+            getCustomPercentLimit(p) {
+                const current = this.toSplitNumber(this.customPercents[p]);
+                const otherTotal = Math.max(this.sumCustomPercent - current, 0);
+                return this.roundSplitValue(Math.max(100 - otherTotal, 0));
+            },
+            handleCustomInput(p, e) {
+                const max = this.getCustomAmountLimit(p);
+                const value = this.roundSplitValue(Math.min(this.toSplitNumber(e.target.value), max));
+                this.customAmounts[p] = value;
+                this.customPercents[p] = this.form.price > 0 ? this.roundSplitValue((value / this.form.price) * 100) : 0;
+                e.target.value = value > 0 ? value : '';
+            },
+            handleCustomPercentInput(p, e) {
+                const max = this.getCustomPercentLimit(p);
+                const percent = this.roundSplitValue(Math.min(this.toSplitNumber(e.target.value), max));
+                this.customPercents[p] = percent;
+                this.customAmounts[p] = this.roundSplitValue(((parseFloat(this.form.price) || 0) * percent) / 100);
+                e.target.value = percent > 0 ? percent : '';
+            },
+            syncCustomPercentsFromAmounts() {
+                const price = this.toSplitNumber(this.form.price);
+                this.activeShopMembers.forEach(p => {
+                    const amount = this.toSplitNumber(this.customAmounts[p]);
+                    this.customPercents[p] = price > 0 ? this.roundSplitValue((amount / price) * 100) : 0;
+                });
+                this.pruneCustomSplitInputs();
+            },
+            syncCustomAmountsFromPercents() {
+                const price = this.toSplitNumber(this.form.price);
+                this.activeShopMembers.forEach(p => {
+                    const percent = this.toSplitNumber(this.customPercents[p]);
+                    this.customAmounts[p] = this.roundSplitValue((price * percent) / 100);
+                });
+                this.pruneCustomSplitInputs();
+            },
+            clampCustomAmountsToPrice() {
+                let remaining = this.toSplitNumber(this.form.price);
+                this.activeShopMembers.forEach(p => {
+                    const value = this.roundSplitValue(Math.min(this.toSplitNumber(this.customAmounts[p]), remaining));
+                    this.customAmounts[p] = value;
+                    remaining = this.roundSplitValue(Math.max(remaining - value, 0));
+                });
+                this.syncCustomPercentsFromAmounts();
+            },
+            pruneCustomSplitInputs() {
+                const allowed = new Set(this.activeShopMembers);
+                Object.keys(this.customAmounts).forEach(p => { if (!allowed.has(p)) delete this.customAmounts[p]; });
+                Object.keys(this.customPercents).forEach(p => { if (!allowed.has(p)) delete this.customPercents[p]; });
+            },
+            getCustomAmountsForSave() {
+                if (this.splitMode !== 'custom') return {...this.customAmounts};
+                const result = {};
+                this.activeShopMembers.forEach(p => {
+                    const amount = this.toSplitNumber(this.customAmounts[p]);
+                    if (amount > 0) result[p] = amount;
+                });
+                return result;
+            },
             formatCurrency(v) { return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(v); },
             formatNumber(n) { return n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }); },
             getAmountPerPerson(ex, p) { if(ex.customSplit) return ex.customAmounts[p] || 0; return ex.consumers.includes(p) ? ex.price / ex.consumers.length : 0; },
