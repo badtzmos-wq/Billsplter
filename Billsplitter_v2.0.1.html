@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="th" data-bs-theme="light">
 <head>
+    <!-- Version: v2.0.4 | Status: Primary app build | Change: V2.0.4 is the canonical app entry for web/PWA deploys -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BillSpliter (Badtz.mos)</title>
+    <title>BillSpliter (Badtz.mos) v2.0.4</title>
     <meta name="theme-color" content="#5C6BC0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -442,6 +443,187 @@
             font-size: 0.78rem;
             pointer-events: none;
         }
+        .custom-input-wrap.with-calc .form-control {
+            padding-right: 74px;
+        }
+        .custom-calc-trigger {
+            position: absolute;
+            top: 50%;
+            right: 36px;
+            transform: translateY(-50%);
+            border: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: var(--r-sm);
+            background: var(--accent-soft);
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+        .custom-calc-trigger:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+        .custom-calc-panel {
+            grid-column: 1 / -1;
+            border: 1px solid rgba(92,107,192,0.22);
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--accent-soft) 100%);
+            border-radius: var(--r-md);
+            padding: 12px;
+            box-shadow: var(--shadow-sm);
+            display: grid;
+            gap: 10px;
+        }
+        .custom-calc-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .custom-calc-title {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .custom-calc-sub {
+            font-size: 0.68rem;
+            color: var(--ink-3);
+            margin-top: 2px;
+        }
+        .custom-calc-close-btn {
+            min-width: 54px;
+            min-height: 38px;
+            padding: 7px 12px !important;
+            border-radius: var(--r-pill) !important;
+            background: var(--surface-2) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--ink-1) !important;
+            font-size: 0.88rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none !important;
+            flex-shrink: 0;
+        }
+        .custom-calc-close-btn:hover {
+            background: var(--danger-soft) !important;
+            border-color: rgba(217,95,82,0.42) !important;
+            color: var(--danger) !important;
+            transform: none !important;
+        }
+        .custom-calc-close-btn i {
+            font-size: 0.95rem;
+        }
+        .custom-calc-display {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--r-sm);
+            padding: 10px 12px;
+            background: #fff;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            text-align: right;
+        }
+        .custom-calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .custom-calc-grid button {
+            min-height: 36px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--ink-1);
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+        .custom-calc-grid button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+        }
+        .custom-calc-grid button.calc-op {
+            color: var(--accent);
+            background: var(--accent-soft);
+            border-color: rgba(92,107,192,0.2);
+        }
+        .custom-calc-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .custom-calc-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 2200;
+            background: rgba(28,25,23,0.42);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+        .custom-calc-modal {
+            width: min(420px, 100%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+        .custom-calc-modal-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.76rem;
+            color: var(--ink-2);
+        }
+        .custom-calc-modal-summary div {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 9px 10px;
+        }
+        .custom-calc-modal-summary strong {
+            display: block;
+            color: var(--ink-1);
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            margin-top: 2px;
+        }
+        .custom-calc-modal .custom-calc-display {
+            min-height: 50px;
+            font-size: 1.2rem;
+        }
+        .custom-calc-modal .custom-calc-grid button {
+            min-height: 48px;
+            font-size: 1rem;
+        }
+        .custom-calc-result {
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: var(--r-md);
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .custom-calc-result strong {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+        }
 
         /* ── Drag handle ── */
         .drag-handle { cursor: grab; color: var(--ink-3); padding: 0 8px; transition: color 0.15s; }
@@ -828,6 +1010,240 @@
         .modal-body { padding: 20px; }
         .modal-title { font-size: 0.95rem; font-weight: 600; }
 
+
+
+        /* ── Shop Manager UX v2.1 ── */
+        .shop-active-context {
+            border: 1px solid var(--shop-border);
+            background: linear-gradient(135deg, var(--shop-soft), #fff);
+            border-radius: var(--r-md);
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+        .shop-active-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--shop);
+            margin-bottom: 2px;
+        }
+        .shop-active-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--ink-1);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .shop-active-meta {
+            margin-top: 4px;
+            color: var(--ink-3);
+            font-size: 0.74rem;
+        }
+        .shop-manager-toolbar {
+            padding: 14px 16px;
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            gap: 10px;
+        }
+        .shop-mode-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            padding: 4px;
+            border: 1px solid var(--border);
+            border-radius: var(--r-pill);
+            background: var(--surface);
+        }
+        .shop-mode-toggle button {
+            border: 0;
+            background: transparent;
+            color: var(--ink-2);
+            border-radius: var(--r-pill);
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .shop-mode-toggle button.active {
+            background: var(--shop);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* v2.0.4 — keep shop action labels on one line */
+        .shop-inline-mode {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: center;
+        }
+        .shop-inline-mode button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+            line-height: 1.15;
+            min-height: 42px;
+        }
+        .shop-inline-mode button i {
+            margin-right: 0 !important;
+            flex: 0 0 auto;
+        }
+        @media (max-width: 380px) {
+            .shop-inline-mode button {
+                font-size: 0.74rem;
+                padding-left: 8px;
+                padding-right: 8px;
+                gap: 4px;
+            }
+        }
+        .shop-editor-warning {
+            border: 1px solid rgba(230,145,58,0.35);
+            background: var(--warn-soft);
+            color: var(--warn);
+            border-radius: var(--r-md);
+            padding: 9px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .shop-view-note {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--ink-2);
+            border-radius: var(--r-md);
+            padding: 9px 12px;
+            font-size: 0.78rem;
+        }
+        .shop-manager-card {
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+        .shop-manager-card.active {
+            background: linear-gradient(135deg, var(--shop-soft), #fff);
+            box-shadow: inset 3px 0 0 var(--shop);
+        }
+        .shop-manager-head {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 12px 16px;
+        }
+        .shop-manager-title {
+            min-width: 0;
+            cursor: pointer;
+        }
+        .shop-manager-name {
+            color: var(--ink-1);
+            font-size: 0.92rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .shop-manager-sub {
+            margin-top: 2px;
+            color: var(--ink-3);
+            font-size: 0.72rem;
+        }
+        .shop-current-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: var(--r-pill);
+            background: var(--shop);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+        .shop-manager-body {
+            padding: 0 16px 14px 46px;
+        }
+        .shop-member-toggle-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 8px;
+        }
+        .shop-collab-chip.disabled {
+            cursor: default;
+            opacity: 0.72;
+        }
+        .shop-editor-locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* ── Shop Workspace UX v2.2 ── */
+        .shop-workspace-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .shop-inline-mode {
+            grid-template-columns: repeat(3, 1fr);
+            margin-bottom: 10px;
+        }
+        .shop-picker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .shop-pill {
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: var(--r-pill);
+            font-size: 0.78rem;
+            font-weight: 500;
+            border: 1px solid var(--shop-border);
+            color: var(--shop);
+            background: var(--shop-soft);
+            transition: all 0.15s;
+        }
+        .shop-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(139,111,71,0.14);
+        }
+        .shop-pill.active {
+            background: var(--shop);
+            color: #fff;
+            border-color: var(--shop);
+        }
+        .shop-mini-label {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 6px;
+        }
+        .shop-collapsed-view,
+        .shop-view-panel,
+        .shop-add-panel,
+        .shop-editor-panel {
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.68);
+            border-radius: var(--r-md);
+            padding: 12px;
+        }
+        .shop-add-panel,
+        .shop-editor-panel {
+            border-color: var(--shop-border);
+            background: linear-gradient(135deg, #fff, var(--shop-soft));
+        }
+        .shop-add-title {
+            color: var(--shop);
+            font-size: 0.86rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
         /* Shop manager items */
         .shop-list-item {
             display: flex; align-items: center; padding: 10px 16px;
@@ -863,14 +1279,29 @@
         .qr-upload-btn:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
         /* ── Receipt (unchanged structure, restyled) ── */
+        /* Version: v2.0.4 | Status: Safari receipt/export layout fix
+           Safari on macOS can miscalculate flex + max-content + transform inside the export pane,
+           causing the Net Clearing column to overlay the main receipt table. The receipt layout is
+           now grid-based with explicit columns and Safari-safe transform declarations. */
         .receipt-container {
             background: linear-gradient(135deg, #FFFDF9 0%, #FFFFFF 58%, var(--bg) 100%);
             color: var(--ink-1);
             padding: 40px;
-            width: max-content; min-width: 1400px; height: fit-content;
+            width: max-content;
+            min-width: 1400px;
+            height: auto;
+            min-height: fit-content;
             border: 1px solid var(--border);
             box-shadow: 0 14px 40px rgba(28,25,23,0.14);
-            transform-origin: top left; display: flex; flex-direction: row; gap: 40px;
+            transform-origin: top left;
+            -webkit-transform-origin: top left;
+            display: grid;
+            grid-template-columns: max-content 320px 320px;
+            grid-auto-flow: column;
+            column-gap: 40px;
+            align-items: start;
+            overflow: visible;
+            isolation: isolate;
         }
         .receipt-container .text-primary { color: var(--accent) !important; }
         .receipt-container .text-warning { color: #F6C453 !important; }
@@ -893,8 +1324,8 @@
             color: var(--accent) !important;
             letter-spacing: -0.01em;
         }
-        .receipt-left { flex-grow: 1; min-width: 0; border-right: 1px dashed var(--border); padding-right: 40px; }
-        .receipt-center { width: 320px; flex-shrink: 0; border-right: 1px dashed var(--border); padding-right: 40px; display: flex; flex-direction: column; }
+        .receipt-left { min-width: 0; width: max-content; border-right: 1px dashed var(--border); padding-right: 40px; grid-column: 1; }
+        .receipt-center { width: 320px; min-width: 320px; max-width: 320px; border-right: 1px dashed var(--border); padding-right: 40px; display: flex; flex-direction: column; grid-column: 2; position: relative; z-index: 1; }
         .receipt-center > .bg-dark {
             border-radius: 22px !important;
             box-shadow: 0 12px 26px rgba(28,25,23,0.18) !important;
@@ -903,7 +1334,7 @@
             color: rgba(255,255,255,0.58) !important;
             letter-spacing: 0.08em;
         }
-        .receipt-right { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+        .receipt-right { width: 320px; min-width: 320px; max-width: 320px; display: flex; flex-direction: column; align-items: center; grid-column: 3; position: relative; z-index: 1; }
         .receipt-qr-frame {
             width: 100%;
             max-width: 260px;
@@ -923,7 +1354,8 @@
         }
         .receipt-table {
             table-layout: auto;
-            width: 100%;
+            width: max-content;
+            min-width: 100%;
             border-collapse: separate;
             border-spacing: 0;
             border: 1px solid var(--border);
@@ -970,6 +1402,22 @@
         }
 
         .net-amount-big { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 800; line-height: 1; }
+
+        @supports (-webkit-touch-callout: none) {
+            .receipt-container {
+                display: grid !important;
+                grid-template-columns: max-content 320px 320px !important;
+                column-gap: 40px !important;
+                -webkit-transform-origin: top left !important;
+                transform-origin: top left !important;
+            }
+            .receipt-left,
+            .receipt-center,
+            .receipt-right {
+                align-self: start;
+            }
+        }
+
         .status-badge {
             font-size: 0.68rem;
             padding: 4px 8px;
@@ -1167,7 +1615,8 @@
             .receipt-container {
                 min-width: 1080px;
                 padding: 24px;
-                gap: 24px;
+                column-gap: 24px;
+                grid-template-columns: max-content 280px 280px;
             }
             .receipt-left {
                 padding-right: 24px;
@@ -1247,7 +1696,7 @@
         <div class="app-logo">
             <div class="app-logo-icon"><i class="fa-solid fa-receipt" style="font-size:0.9rem"></i></div>
             <div>
-                <div class="app-logo-text">BillSpliter <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--ink-3);font-weight:400"> </span></div>
+                <div class="app-logo-text">BillSpliter <span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--ink-3);font-weight:400">{{ appVersion }}</span></div>
                 <div class="app-logo-sub">by Badtz.mos</div>
             </div>
         </div>
@@ -1300,71 +1749,138 @@
                     </div>
                 </div>
 
-                <!-- Shop Card — redesigned with step flow -->
+                <!-- Shop Card — inline shop workspace v2.2 -->
                 <div class="app-card card-shop">
-                    <!-- Step 1: Shop Name -->
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                        <div style="width:20px;height:20px;border-radius:50%;background:var(--shop);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
-                        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--shop)">ร้าน / สถานที่</div>
-                        <button class="btn-shop-mgr ms-auto" data-bs-toggle="modal" data-bs-target="#shopManagerModal">
-                            <i class="fa-solid fa-pen-to-square me-1" style="font-size:0.7rem"></i>จัดการร้าน
+                    <div class="shop-workspace-head">
+                        <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                            <div style="width:20px;height:20px;border-radius:50%;background:var(--shop);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+                            <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--shop)">ร้าน / สถานที่</div>
+                        </div>
+                        <button class="btn-shop-mgr" @click="shopPanelCollapsed = !shopPanelCollapsed">
+                            <i class="fa-solid" :class="shopPanelCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size:0.7rem"></i>
+                            {{ shopPanelCollapsed ? 'Expand' : 'Collabs' }}
                         </button>
                     </div>
 
-                    <!-- Saved shops quick-select pills -->
-                    <div v-if="savedShops.length > 0" class="d-flex flex-wrap mb-2" style="gap:4px">
-                        <div v-for="s in savedShops" :key="s"
-                            @click="selectShopInline(s)"
-                            style="cursor:pointer;padding:4px 10px;border-radius:var(--r-pill);font-size:0.78rem;font-weight:500;border:1px solid;transition:all 0.15s"
-                            :style="currentShop === s
-                                ? 'background:var(--shop);color:#fff;border-color:var(--shop)'
-                                : 'background:var(--shop-soft);color:var(--shop);border-color:var(--shop-border)'">
-                            {{ s }}
+                    <div class="shop-active-context mb-2">
+                        <div class="shop-active-label">Current shop</div>
+                        <div class="shop-active-name">
+                            <i class="fa-solid fa-location-dot" style="color:var(--shop);font-size:0.82rem"></i>
+                            <span>{{ currentShop || 'ยังไม่ได้เลือกร้าน' }}</span>
+                        </div>
+                        <div class="shop-active-meta">
+                            {{ currentShop ? ((shopMemberMap[currentShop] || activeShopMembers).length + ' คนที่ร่วมด้วย') : 'เลือกร้านจากรายการ หรือกด Add Shop เพื่อเพิ่มร้านใหม่' }}
                         </div>
                     </div>
 
-                    <!-- Type new shop name -->
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control fw-bold" style="border-color:var(--shop-border);font-size:0.875rem"
-                            :value="currentShop"
-                            @input="currentShop = $event.target.value"
-                            @change="onShopInputChange($event.target.value)"
-                            placeholder="พิมพ์ชื่อร้านใหม่..."
-                            @keyup.enter="$event.target.blur()">
-                    </div>
-
-                    <!-- Step 2: Default payer -->
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                        <div style="width:20px;height:20px;border-radius:50%;background:var(--ink-3);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
-                        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-3)">คนจ่ายหลัก (optional)</div>
-                    </div>
-                    <div class="mb-3">
-                        <select class="form-select form-select-sm select-shop" v-model="shopDefaults[currentShop]" @change="updateFormPayer">
-                            <option value="">-- ไม่ระบุ --</option>
-                            <option v-for="p in people" :value="p">{{ p }}</option>
-                        </select>
-                    </div>
-
-                    <!-- Step 3: Check-in members -->
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                        <div style="width:20px;height:20px;border-radius:50%;background:var(--ink-3);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
-                        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-3)">สมาชิกที่ร่วมด้วย</div>
-                        <div style="font-size:0.72rem;margin-left:auto;display:flex;gap:10px">
-                            <a href="#" style="color:var(--accent);text-decoration:none" @click.prevent="toggleActiveMembers(true)">ทั้งหมด</a>
-                            <a href="#" style="color:var(--ink-3);text-decoration:none" @click.prevent="toggleActiveMembers(false)">ล้าง</a>
+                    <!-- Collapsed view: only current shop + collab members -->
+                    <div v-if="shopPanelCollapsed" class="shop-collapsed-view">
+                        <div class="shop-mini-label">สมาชิกที่ร่วมด้วย</div>
+                        <div class="d-flex flex-wrap" style="gap:4px">
+                            <div v-for="p in activeShopMembers" :key="'compact-' + p" class="member-chip active" style="cursor:default">{{ p }}</div>
+                            <div v-if="activeShopMembers.length === 0" style="font-size:0.78rem;color:var(--ink-3)">ยังไม่มีสมาชิกที่ร่วมด้วย</div>
                         </div>
                     </div>
-                    <div class="d-flex flex-wrap" style="max-height:160px;overflow-y:auto;gap:4px">
-                        <div v-for="p in people" :key="p" class="member-chip" :class="{ active: activeShopMembers.includes(p) }" @click="toggleActiveMember(p)">{{ p }}</div>
+
+                    <div v-else>
+                        <div class="shop-mode-toggle shop-inline-mode" role="group" aria-label="Shop workspace actions">
+                            <button type="button" :class="{ active: shopUiMode === 'add' }" @click="setShopUiMode(shopUiMode === 'add' ? 'view' : 'add')">
+                                <i class="fa-solid fa-plus me-1"></i>Add Shop
+                            </button>
+                            <button type="button" :class="{ active: shopUiMode === 'editor' }" @click="setShopUiMode(shopUiMode === 'editor' ? 'view' : 'editor')">
+                                <i class="fa-solid fa-pen-to-square me-1"></i>Shop Manager
+                            </button>
+                        </div>
+
+                        <!-- Saved shops quick-select -->
+                        <div v-if="savedShops.length > 0" class="shop-picker-row">
+                            <div v-for="s in savedShops" :key="s"
+                                @click="selectShopInline(s); if(shopUiMode === 'editor') tempEditShopName = s"
+                                class="shop-pill"
+                                :class="{ active: currentShop === s }">
+                                {{ s }}
+                            </div>
+                        </div>
+
+                        <div v-if="shopUiMode === 'view'" class="shop-view-panel">
+                            <div class="shop-view-note mb-2">
+                                <i class="fa-solid fa-lock me-1"></i>
+                                View Mode ใช้สำหรับเลือก/ตรวจสอบร้านเท่านั้น จึงไม่มีกล่องแก้ไขเพื่อลดโอกาสแก้ผิดร้าน
+                            </div>
+                            <div class="shop-mini-label">สมาชิกที่ร่วมด้วย</div>
+                            <div class="d-flex flex-wrap" style="gap:4px">
+                                <div v-for="p in activeShopMembers" :key="'view-' + p" class="member-chip active" style="cursor:default">{{ p }}</div>
+                                <div v-if="activeShopMembers.length === 0" style="font-size:0.78rem;color:var(--ink-3)">ยังไม่มีสมาชิกที่ร่วมด้วย</div>
+                            </div>
+                        </div>
+
+                        <div v-if="shopUiMode === 'add'" class="shop-add-panel">
+                            <div class="shop-add-title"><i class="fa-solid fa-store me-1"></i>เพิ่มร้านใหม่</div>
+                            <div class="shop-view-note mb-2">เพิ่มร้านใหม่แบบแยกขั้นตอน ไม่กระทบ Current shop เดิมจนกว่าจะกดสร้างร้าน</div>
+                            <input type="text" class="form-control fw-bold mb-2" style="border-color:var(--shop-border);font-size:0.875rem"
+                                v-model="newShopName" placeholder="ชื่อร้านใหม่..." @keyup.enter="createNewShop">
+                            <label class="shop-mini-label">คนจ่ายหลัก (optional)</label>
+                            <select class="form-select form-select-sm select-shop mb-2" v-model="newShopDefaultPayer">
+                                <option value="">-- ไม่ระบุ --</option>
+                                <option v-for="p in people" :value="p">{{ p }}</option>
+                            </select>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="shop-mini-label mb-0">สมาชิกที่ร่วมด้วย</label>
+                                <div style="font-size:0.72rem;display:flex;gap:10px">
+                                    <a href="#" style="color:var(--accent);text-decoration:none" @click.prevent="selectAllNewShopMembers(true)">ทั้งหมด</a>
+                                    <a href="#" style="color:var(--ink-3);text-decoration:none" @click.prevent="selectAllNewShopMembers(false)">ล้าง</a>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap mb-2" style="max-height:130px;overflow-y:auto;gap:4px">
+                                <div v-for="p in people" :key="'new-' + p" class="member-chip" :class="{ active: newShopMembers.includes(p) }" @click="toggleNewShopMember(p)">{{ p }}</div>
+                            </div>
+                            <button class="btn btn-category btn-save-shop-flow" @click="createNewShop" :disabled="!newShopName.trim()">
+                                <i class="fa-solid fa-plus"></i>สร้างร้านใหม่
+                            </button>
+                            <button class="btn btn-secondary w-100 mt-2" @click="setShopUiMode('view')">
+                                ยกเลิก / กลับสู่มุมมองปกติ
+                            </button>
+                        </div>
+
+                        <div v-if="shopUiMode === 'editor'" class="shop-editor-panel">
+                            <div class="shop-editor-warning mb-2">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                Shop Manager แก้ไขเฉพาะ Current shop เท่านั้น กรุณาเลือกร้านด้านบนก่อนแก้ไข
+                            </div>
+                            <label class="shop-mini-label">ชื่อ Current shop</label>
+                            <input type="text" class="form-control fw-bold mb-2" style="border-color:var(--shop-border);font-size:0.875rem"
+                                v-model="tempEditShopName" :disabled="!currentShop" placeholder="เลือกร้านก่อนแก้ไขชื่อ">
+                            <label class="shop-mini-label">คนจ่ายหลัก (optional)</label>
+                            <select class="form-select form-select-sm select-shop mb-2" v-model="shopDefaults[currentShop]" @change="updateFormPayer" :disabled="!currentShop">
+                                <option value="">-- ไม่ระบุ --</option>
+                                <option v-for="p in people" :value="p">{{ p }}</option>
+                            </select>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="shop-mini-label mb-0">สมาชิกที่ร่วมด้วย</label>
+                                <div style="font-size:0.72rem;display:flex;gap:10px">
+                                    <a href="#" style="color:var(--accent);text-decoration:none" @click.prevent="toggleActiveMembers(true)">ทั้งหมด</a>
+                                    <a href="#" style="color:var(--ink-3);text-decoration:none" @click.prevent="toggleActiveMembers(false)">ล้าง</a>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap" style="max-height:150px;overflow-y:auto;gap:4px">
+                                <div v-for="p in people" :key="'edit-' + p" class="member-chip" :class="{ active: activeShopMembers.includes(p) }" @click="toggleActiveMember(p)">{{ p }}</div>
+                            </div>
+                            <div style="margin-top:8px;font-size:0.72rem;color:var(--ink-3);text-align:right">
+                                {{ activeShopMembers.length }} คน เช็คอินแล้ว
+                            </div>
+                            <div class="d-grid gap-2 mt-2">
+                                <button class="btn btn-category btn-save-shop-flow mt-0" @click="saveCurrentShopEdits" :disabled="!currentShop || !tempEditShopName.trim()">
+                                    <i class="fa-solid fa-check"></i>บันทึกการแก้ไขร้านนี้
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @click="setShopUiMode('view')">
+                                    <i class="fa-solid fa-check-circle me-1"></i>เสร็จสิ้น / กลับสู่มุมมองปกติ
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" @click="deleteCurrentShopInline" :disabled="!currentShop">
+                                    <i class="fa-solid fa-trash me-1"></i>ลบร้านนี้
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div v-if="activeShopMembers.length > 0" style="margin-top:8px;font-size:0.72rem;color:var(--ink-3);text-align:right">
-                        {{ activeShopMembers.length }} คน เช็คอินแล้ว
-                    </div>
-                    <button class="btn btn-category btn-save-shop-flow" @click="manualAddShop" :disabled="!currentShop.trim()"
-                        :title="savedShops.includes(currentShop) ? 'บันทึกสมาชิกที่เช็คอิน' : 'เพิ่มร้านใหม่'">
-                        <i class="fa-solid fa-check"></i>
-                        {{ savedShops.includes(currentShop) ? 'บันทึกร้านและสมาชิก' : 'เพิ่มร้านนี้' }}
-                    </button>
                 </div>
 
                 <!-- Add Item Card -->
@@ -1439,13 +1955,16 @@
                                                 <small v-if="customInputMode === 'percent'">คิดเป็น {{ formatNumber(customAmounts[p] || 0) }} บาท</small>
                                                 <small v-else>ใส่ได้อีกไม่เกิน {{ formatNumber(getCustomAmountLimit(p)) }} บาท</small>
                                             </div>
-                                            <div class="custom-input-wrap">
-                                                <input v-if="customInputMode === 'amount'" type="number" class="form-control"
-                                                    inputmode="decimal" min="0" step="0.01" :max="getCustomAmountLimit(p)"
-                                                    :value="getCustomAmountDisplay(p)" @input="handleCustomInput(p, $event)" placeholder="0">
-                                                <input v-else type="number" class="form-control"
-                                                    inputmode="decimal" min="0" step="0.01" :max="getCustomPercentLimit(p)"
-                                                    :value="getCustomPercentDisplay(p)" @input="handleCustomPercentInput(p, $event)" placeholder="0">
+                                            <div class="custom-input-wrap with-calc">
+                                                <input v-if="customInputMode === 'amount'" type="text" class="form-control"
+                                                    inputmode="decimal" autocomplete="off"
+                                                    :value="getCustomAmountDisplay(p)" @input="handleCustomInput(p, $event)" @blur="normalizeCustomInput(p)" placeholder="0.00">
+                                                <input v-else type="text" class="form-control"
+                                                    inputmode="decimal" autocomplete="off"
+                                                    :value="getCustomPercentDisplay(p)" @input="handleCustomPercentInput(p, $event)" @blur="normalizeCustomInput(p)" placeholder="0.00">
+                                                <button type="button" class="custom-calc-trigger" @click="openCustomCalculator(p)" :title="'เครื่องคิดเลข: ' + p">
+                                                    <i class="fa-solid fa-calculator" style="font-size:0.72rem"></i>
+                                                </button>
                                                 <span class="custom-input-suffix">{{ customInputMode === 'amount' ? '฿' : '%' }}</span>
                                             </div>
                                         </div>
@@ -1576,40 +2095,140 @@
         </div>
     </div>
 
+
+    <!-- Custom Split Calculator Popup -->
+    <div v-if="calculatorTarget" class="custom-calc-modal-backdrop" @click.self="closeCustomCalculator">
+        <div class="custom-calc-modal" role="dialog" aria-modal="true">
+            <div class="custom-calc-head">
+                <div>
+                    <div class="custom-calc-title">เครื่องคิดเลข — {{ calculatorTarget }}</div>
+                    <div class="custom-calc-sub">กรอกสูตรได้ เช่น 120.50+35 หรือใช้ปุ่มด้านล่าง</div>
+                </div>
+                <button type="button" class="custom-calc-close-btn" @click="closeCustomCalculator" aria-label="ปิดเครื่องคิดเลข"><i class="fa-solid fa-xmark"></i><span>ปิด</span></button>
+            </div>
+            <div class="custom-calc-modal-summary">
+                <div>
+                    โหมด
+                    <strong>{{ customInputMode === 'amount' ? 'บาท' : '%' }}</strong>
+                </div>
+                <div>
+                    ใส่ได้สูงสุด
+                    <strong>{{ formatNumber(calculatorCurrentLimit) }} {{ customInputMode === 'amount' ? '฿' : '%' }}</strong>
+                </div>
+            </div>
+            <input class="custom-calc-display" v-model="calculatorExpression" inputmode="decimal" autocomplete="off" placeholder="เช่น 120.50+35" @keyup.enter="applyCalcToMember(calculatorTarget)">
+            <div class="custom-calc-result">
+                <span>ผลลัพธ์</span>
+                <strong>{{ calculatorPreviewText }}</strong>
+            </div>
+            <div class="custom-calc-grid">
+                <button type="button" @click="appendCalc('7')">7</button>
+                <button type="button" @click="appendCalc('8')">8</button>
+                <button type="button" @click="appendCalc('9')">9</button>
+                <button type="button" class="calc-op" @click="appendCalc('/')">÷</button>
+                <button type="button" @click="appendCalc('4')">4</button>
+                <button type="button" @click="appendCalc('5')">5</button>
+                <button type="button" @click="appendCalc('6')">6</button>
+                <button type="button" class="calc-op" @click="appendCalc('*')">×</button>
+                <button type="button" @click="appendCalc('1')">1</button>
+                <button type="button" @click="appendCalc('2')">2</button>
+                <button type="button" @click="appendCalc('3')">3</button>
+                <button type="button" class="calc-op" @click="appendCalc('-')">−</button>
+                <button type="button" @click="appendCalc('0')">0</button>
+                <button type="button" @click="appendCalc('.')">.</button>
+                <button type="button" @click="backspaceCalc">⌫</button>
+                <button type="button" class="calc-op" @click="appendCalc('+')">+</button>
+            </div>
+            <div class="custom-calc-actions">
+                <button type="button" class="btn btn-secondary" @click="clearCalc">ล้าง</button>
+                <button type="button" class="btn btn-primary" @click="applyCalcToMember(calculatorTarget)">ใช้ค่านี้</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Shop Manager Modal -->
     <div class="modal fade" id="shopManagerModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-store me-2" style="color:var(--shop);font-size:0.9rem"></i>จัดการร้านค้า</h5>
+                    <div>
+                        <h5 class="modal-title"><i class="fa-solid fa-store me-2" style="color:var(--shop);font-size:0.9rem"></i>จัดการร้านค้า</h5>
+                        <div style="font-size:0.74rem;color:var(--ink-3);margin-top:3px">เลือก Current shop ให้ชัดเจนก่อนแก้ไข เพื่อลดโอกาสแก้ผิดร้าน</div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div style="padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);font-size:0.75rem;color:var(--ink-3)">
-                    <i class="fa-solid fa-circle-info me-1"></i>คลิกที่ชื่อร้านเพื่อเลือก · ลาก <i class="fa-solid fa-grip-vertical"></i> เพื่อเรียงลำดับ
+                <div class="shop-manager-toolbar">
+                    <div class="shop-mode-toggle" role="group" aria-label="Shop manager mode">
+                        <button type="button" :class="{ active: shopManagerMode === 'view' }" @click="setShopManagerMode('view')">
+                            <i class="fa-solid fa-eye me-1"></i> View Mode
+                        </button>
+                        <button type="button" :class="{ active: shopManagerMode === 'editor' }" @click="setShopManagerMode('editor')">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> Shop Manager
+                        </button>
+                    </div>
+                    <div v-if="shopManagerMode === 'editor'" class="shop-editor-warning">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        ขณะนี้ Shop Manager แก้ไขได้เฉพาะร้านที่กดเลือกเป็น Current shop แล้วเท่านั้น
+                    </div>
+                    <div v-else class="shop-view-note">
+                        <i class="fa-solid fa-lock me-1"></i>
+                        View Mode ใช้สำหรับเลือก/ตรวจสอบร้าน การแก้ชื่อ ลบ หรือเปลี่ยนสมาชิกถูกล็อกไว้
+                    </div>
                 </div>
-                <div class="modal-body p-0" style="max-height:60vh;overflow-y:auto">
+                <div class="modal-body p-0" style="max-height:66vh;overflow-y:auto">
                     <div v-if="savedShops.length === 0" class="text-center py-5" style="color:var(--ink-3);font-size:0.85rem">
                         <i class="fa-solid fa-store mb-2" style="font-size:1.5rem;display:block;opacity:0.3"></i>
                         ยังไม่มีร้านค้า
                     </div>
-                    <div v-for="(shop, index) in savedShops" :key="index" class="shop-list-item draggable-item" draggable="true" @dragstart="onDragStartShop($event, index)" @drop="onDropShop($event, index)" @dragover.prevent>
-                        <div class="drag-handle me-2" style="padding:0 6px"><i class="fa-solid fa-grip-vertical" style="font-size:0.85rem"></i></div>
-                        <div v-if="editingShopIdx === index" class="input-group input-group-sm flex-grow-1 me-2">
-                            <input type="text" class="form-control" v-model="tempShopName" @keyup.enter="saveEditShop(index)" style="font-weight:600">
-                            <button class="btn btn-success px-3" @click="saveEditShop(index)"><i class="fa-solid fa-check"></i></button>
-                            <button class="btn btn-secondary px-3" @click="cancelEditShop"><i class="fa-solid fa-xmark"></i></button>
+                    <div v-for="(shop, index) in savedShops" :key="shop" class="shop-manager-card draggable-item" :class="{ active: currentShop === shop }" draggable="true" @dragstart="onDragStartShop($event, index)" @drop="onDropShop($event, index)" @dragover.prevent>
+                        <div class="shop-manager-head">
+                            <div class="drag-handle" style="padding:0 6px" :class="{ 'shop-editor-locked': shopManagerMode !== 'editor' }"><i class="fa-solid fa-grip-vertical" style="font-size:0.85rem"></i></div>
+
+                            <div v-if="editingShopIdx === index" class="input-group input-group-sm">
+                                <input type="text" class="form-control" v-model="tempShopName" @keyup.enter="saveEditShop(index)" style="font-weight:600">
+                                <button class="btn btn-success px-3" @click="saveEditShop(index)"><i class="fa-solid fa-check"></i></button>
+                                <button class="btn btn-secondary px-3" @click="cancelEditShop"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+
+                            <div v-else class="shop-manager-title" @click="selectShopForManager(shop)">
+                                <div class="shop-manager-name">
+                                    {{ shop }}
+                                    <span v-if="currentShop === shop" class="shop-current-badge ms-2"><i class="fa-solid fa-check"></i> Current</span>
+                                </div>
+                                <div class="shop-manager-sub">
+                                    {{ (shopMemberMap[shop] || people).length }} คน · คลิกเพื่อเลือก/ขยายรายละเอียด
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2" v-if="editingShopIdx !== index" @click.stop style="flex-shrink:0">
+                                <button class="btn btn-sm btn-category" style="padding:5px 12px;min-width:36px" @click="selectShopFromManager(shop)">
+                                    เลือกร้านนี้
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" style="padding:5px 12px;min-width:36px" @click="startEditShop(index)" :disabled="shopManagerMode !== 'editor' || currentShop !== shop" title="ต้องอยู่ใน Shop Manager และเลือกร้านนี้ก่อน">
+                                    <i class="fa-solid fa-pen" style="font-size:0.78rem"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" style="padding:5px 12px;min-width:36px" @click="deleteShop(index)" :disabled="shopManagerMode !== 'editor' || currentShop !== shop" title="ต้องอยู่ใน Shop Manager และเลือกร้านนี้ก่อน">
+                                    <i class="fa-solid fa-trash" style="font-size:0.78rem"></i>
+                                </button>
+                                <button class="btn btn-sm btn-secondary" style="padding:5px 10px" @click="toggleShopPanel(shop)">
+                                    <i class="fa-solid" :class="isShopPanelExpanded(shop) ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div v-else class="flex-grow-1 cursor-pointer" style="font-size:0.9rem;font-weight:600;color:var(--ink-1);padding:4px 0" @click="selectShopFromManager(shop)">
-                            {{ shop }}
-                            <span v-if="shopMemberMap[shop]" style="font-size:0.72rem;font-weight:400;color:var(--ink-3);margin-left:6px">{{ shopMemberMap[shop].length }} คน</span>
-                        </div>
-                        <div class="d-flex gap-2" v-if="editingShopIdx !== index" @click.stop style="flex-shrink:0">
-                            <button class="btn btn-sm btn-outline-warning" style="padding:5px 12px;min-width:36px" @click="startEditShop(index)">
-                                <i class="fa-solid fa-pen" style="font-size:0.78rem"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" style="padding:5px 12px;min-width:36px" @click="deleteShop(index)">
-                                <i class="fa-solid fa-trash" style="font-size:0.78rem"></i>
-                            </button>
+
+                        <div v-show="isShopPanelExpanded(shop)" class="shop-manager-body">
+                            <div style="font-size:0.72rem;font-weight:700;color:var(--ink-3);letter-spacing:0.06em;text-transform:uppercase">
+                                Collabs / Members
+                            </div>
+                            <div class="shop-member-toggle-grid" :class="{ 'shop-editor-locked': shopManagerMode !== 'editor' || currentShop !== shop }">
+                                <div v-for="p in people" :key="shop + '-' + p" class="member-chip shop-collab-chip" :class="{ active: getShopMembers(shop).includes(p), disabled: shopManagerMode !== 'editor' || currentShop !== shop }" @click="toggleShopMember(shop, p)">
+                                    {{ p }}
+                                </div>
+                            </div>
+                            <div style="font-size:0.72rem;color:var(--ink-3);margin-top:8px">
+                                <i class="fa-solid fa-circle-info me-1"></i>
+                                {{ shopManagerMode === 'editor' && currentShop === shop ? 'กดชื่อสมาชิกเพื่อสลับ collab ของร้านนี้' : 'ต้องกดเลือกร้านนี้ และเปิด Shop Manager ก่อนจึงจะแก้ไขสมาชิกได้' }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1797,7 +2416,7 @@
                     </div>
 
                     <div class="receipt-export-pane">
-                    <div id="captureArea" class="receipt-container" :style="{ transform: 'scale(' + zoomLevel + ')', transformOrigin: 'top left', marginBottom: ((zoomLevel - 1) * 100) + '%' }">
+                    <div id="captureArea" class="receipt-container" :style="{ transform: 'scale(' + zoomLevel + ')', WebkitTransform: 'scale(' + zoomLevel + ')', transformOrigin: 'top left', WebkitTransformOrigin: 'top left', marginBottom: ((zoomLevel - 1) * 100) + '%' }">
                         <div class="receipt-left">
                             <div class="mb-4 pb-3 border-bottom d-flex justify-content-between align-items-end">
                                 <h2 class="fw-bold text-dark mb-0">สรุปยอดรวม</h2>
@@ -1884,9 +2503,15 @@
                 expenses: [], backups: [], currentLoadedId: null, isModified: false,
                 form: { id: null, item: '', price: null, payer: '', consumers: [] },
                 splitMode: 'equal', customInputMode: 'amount', customAmounts: {}, customPercents: {},
+                customAmountInputs: {}, customPercentInputs: {},
+                calculatorTarget: '', calculatorExpression: '',
+                appVersion: 'v2.0.4', appStatus: 'inline-shop-mode-simplification',
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
-                editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {}
+                editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {},
+                shopManagerMode: 'view', selectedShopForManager: '', expandedShopPanels: {},
+                shopUiMode: 'view', shopPanelCollapsed: false,
+                newShopName: '', newShopDefaultPayer: '', newShopMembers: [], tempEditShopName: ''
             }
         },
         mounted() {
@@ -1912,6 +2537,20 @@
                 if (Math.abs(sum - price) < 0.01 && price > 0) return 'bg-success text-white';
                 if (sum > price) return 'bg-danger text-white error';
                 return 'bg-warning text-dark';
+            },
+
+            calculatorCurrentLimit() {
+                if (!this.calculatorTarget) return 0;
+                return this.customInputMode === 'amount' ? this.getCustomAmountLimit(this.calculatorTarget) : this.getCustomPercentLimit(this.calculatorTarget);
+            },
+            calculatorPreviewText() {
+                if (!this.calculatorExpression) return '-';
+                const result = this.evaluateCalcExpression(this.calculatorExpression);
+                if (!Number.isFinite(result) || result < 0) return 'สูตรไม่ถูกต้อง';
+                const limited = Math.min(result, this.calculatorCurrentLimit);
+                const unit = this.customInputMode === 'amount' ? ' ฿' : '%';
+                const suffix = result > this.calculatorCurrentLimit ? ' (เกิน limit)' : '';
+                return `${this.formatNumber(this.roundSplitValue(limited))}${unit}${suffix}`;
             },
             isFormValid() {
                 if(!this.form.item || !this.form.price || this.form.price <= 0 || !this.form.payer) return false;
@@ -2047,41 +2686,182 @@
             },
             removeExpense(id) { if(confirm('ลบรายการนี้?')) { this.expenses = this.expenses.filter(ex => ex.id !== id); this.saveData(); this.showToast(); } },
             cancelEdit() { this.resetForm(); },
-            startEditShop(idx) { this.editingShopIdx = idx; this.tempShopName = this.savedShops[idx]; },
-            saveEditShop(idx) { if(this.tempShopName) { const old = this.savedShops[idx]; const n = this.tempShopName.trim(); this.savedShops[idx] = n; this.expenses.forEach(ex => { if(ex.shop === old) ex.shop = n; }); this.editingShopIdx = -1; this.saveData(); this.showToast(); } },
+            setShopManagerMode(mode) { this.shopManagerMode = mode; if(mode !== 'editor') this.editingShopIdx = -1; },
+            setShopUiMode(mode) {
+                this.shopUiMode = mode;
+                if (mode === 'add') {
+                    this.newShopName = '';
+                    this.newShopDefaultPayer = '';
+                    this.newShopMembers = [...this.people];
+                }
+                if (mode === 'editor') {
+                    this.tempEditShopName = this.currentShop || '';
+                }
+            },
+            toggleNewShopMember(p) {
+                const idx = this.newShopMembers.indexOf(p);
+                if (idx > -1) this.newShopMembers.splice(idx, 1);
+                else this.newShopMembers.push(p);
+            },
+            selectAllNewShopMembers(all) {
+                this.newShopMembers = all ? [...this.people] : [];
+            },
+            createNewShop() {
+                const name = (this.newShopName || '').trim();
+                if (!name) return;
+                if (this.savedShops.includes(name)) {
+                    alert('มีร้านนี้อยู่แล้ว ระบบจะสลับไปที่ร้านนั้นแทน');
+                    this.selectShopInline(name);
+                    this.shopUiMode = 'view';
+                    return;
+                }
+                this.savedShops.push(name);
+                this.shopMemberMap[name] = [...this.newShopMembers];
+                this.shopDefaults[name] = this.newShopDefaultPayer || '';
+                this.expandedShopPanels[name] = true;
+                this.selectShopInline(name);
+                this.newShopName = '';
+                this.newShopDefaultPayer = '';
+                this.newShopMembers = [...this.people];
+                this.shopUiMode = 'view';
+                this.saveData();
+                this.showToast();
+            },
+            saveCurrentShopEdits() {
+                if (!this.currentShop) return;
+                const oldName = this.currentShop;
+                const newName = (this.tempEditShopName || '').trim();
+                if (!newName) return;
+                if (newName !== oldName && this.savedShops.includes(newName)) {
+                    alert('มีชื่อร้านนี้อยู่แล้ว กรุณาใช้ชื่ออื่น');
+                    return;
+                }
+                const idx = this.savedShops.indexOf(oldName);
+                if (idx > -1) this.savedShops[idx] = newName;
+                this.expenses.forEach(ex => { if (ex.shop === oldName) ex.shop = newName; });
+                this.shopMemberMap[newName] = [...this.activeShopMembers];
+                if (newName !== oldName) delete this.shopMemberMap[oldName];
+                this.shopDefaults[newName] = this.shopDefaults[oldName] || '';
+                if (newName !== oldName) delete this.shopDefaults[oldName];
+                this.expandedShopPanels[newName] = true;
+                if (newName !== oldName) delete this.expandedShopPanels[oldName];
+                this.currentShop = newName;
+                this.form.consumers = [...this.activeShopMembers];
+                this.updateFormPayer();
+                this.saveData();
+                this.showToast();
+                this.shopUiMode = 'view';
+            },
+            deleteCurrentShopInline() {
+                if (!this.currentShop) return;
+                const s = this.currentShop;
+                const idx = this.savedShops.indexOf(s);
+                if (idx < 0) return;
+                if (confirm(`ลบร้าน "${s}"? รายการของร้านนี้จะถูกลบด้วย`)) {
+                    this.savedShops.splice(idx, 1);
+                    this.expenses = this.expenses.filter(ex => ex.shop !== s);
+                    delete this.shopMemberMap[s];
+                    delete this.shopDefaults[s];
+                    delete this.expandedShopPanels[s];
+                    const next = this.savedShops[0] || '';
+                    this.currentShop = next;
+                    if (next) this.selectShopInline(next);
+                    else { this.activeShopMembers = []; this.form.consumers = []; this.form.payer = ''; }
+                    this.shopUiMode = 'view';
+                    this.saveData();
+                    this.showToast();
+                }
+            },
+            getShopMembers(shop) { return this.shopMemberMap[shop] ? [...this.shopMemberMap[shop]] : [...this.people]; },
+            isShopPanelExpanded(shop) { return this.expandedShopPanels[shop] !== false; },
+            toggleShopPanel(shop) { this.expandedShopPanels[shop] = !this.isShopPanelExpanded(shop); },
+            selectShopForManager(n) { this.selectShopInline(n); this.expandedShopPanels[n] = true; },
+            toggleShopMember(shop, person) {
+                if(this.shopManagerMode !== 'editor' || this.currentShop !== shop) return;
+                const members = this.getShopMembers(shop);
+                const idx = members.indexOf(person);
+                if(idx > -1) members.splice(idx, 1); else members.push(person);
+                this.shopMemberMap[shop] = members;
+                this.activeShopMembers = [...members];
+                this.form.consumers = [...members];
+                this.pruneCustomSplitInputs();
+                this.saveData();
+            },
+            startEditShop(idx) {
+                const shop = this.savedShops[idx];
+                if(this.shopManagerMode !== 'editor' || this.currentShop !== shop) { alert('กรุณาเลือก Current shop และเปิด Shop Manager ก่อนแก้ไขชื่อร้าน'); return; }
+                this.editingShopIdx = idx; this.tempShopName = shop;
+            },
+            saveEditShop(idx) {
+                if(this.shopManagerMode !== 'editor') return;
+                if(this.tempShopName) {
+                    const old = this.savedShops[idx]; const n = this.tempShopName.trim();
+                    if(!n) return;
+                    this.savedShops[idx] = n;
+                    this.expenses.forEach(ex => { if(ex.shop === old) ex.shop = n; });
+                    if(this.shopMemberMap[old]) { this.shopMemberMap[n] = this.shopMemberMap[old]; delete this.shopMemberMap[old]; }
+                    if(this.shopDefaults[old]) { this.shopDefaults[n] = this.shopDefaults[old]; delete this.shopDefaults[old]; }
+                    if(this.currentShop === old) this.currentShop = n;
+                    this.expandedShopPanels[n] = true; delete this.expandedShopPanels[old];
+                    this.editingShopIdx = -1; this.saveData(); this.showToast();
+                }
+            },
             cancelEditShop() { this.editingShopIdx = -1; },
-            deleteShop(idx) { const s = this.savedShops[idx]; if(confirm(`ลบร้าน "${s}"?`)) { this.savedShops.splice(idx, 1); this.expenses = this.expenses.filter(ex => ex.shop !== s); this.saveData(); this.showToast(); } },
-            selectShopInline(n) { this.currentShop = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); },
-            selectShopFromManager(n) { this.currentShop = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); bootstrap.Modal.getInstance(document.getElementById('shopManagerModal')).hide(); },
-            editExpense(ex) { this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+            deleteShop(idx) {
+                const s = this.savedShops[idx];
+                if(this.shopManagerMode !== 'editor' || this.currentShop !== s) { alert('กรุณาเลือก Current shop และเปิด Shop Manager ก่อนลบร้าน'); return; }
+                if(confirm(`ลบร้าน "${s}"? รายการของร้านนี้จะถูกลบด้วย`)) {
+                    this.savedShops.splice(idx, 1); this.expenses = this.expenses.filter(ex => ex.shop !== s);
+                    delete this.shopMemberMap[s]; delete this.shopDefaults[s]; delete this.expandedShopPanels[s];
+                    if(this.currentShop === s) this.currentShop = this.savedShops[0] || '';
+                    this.selectShopInline(this.currentShop);
+                    this.saveData(); this.showToast();
+                }
+            },
+            selectShopInline(n) { if(!n) return; this.currentShop = n; this.selectedShopForManager = n; this.tempEditShopName = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); },
+            selectShopFromManager(n) { this.selectShopInline(n); this.expandedShopPanels[n] = true; bootstrap.Modal.getInstance(document.getElementById('shopManagerModal')).hide(); },
+            editExpense(ex) { this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
             onShopInputChange(n) { if (this.shopMemberMap[n]) { this.activeShopMembers = [...this.shopMemberMap[n]]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); } },
-            manualAddShop() { const shopName = this.currentShop.trim(); if(shopName) { this.currentShop = shopName; if(!this.savedShops.includes(shopName)) this.savedShops.push(shopName); this.shopMemberMap[shopName] = [...this.activeShopMembers]; this.saveData(); this.showToast(); } },
+            manualAddShop() { const shopName = this.currentShop.trim(); if(shopName) { this.currentShop = shopName; if(!this.savedShops.includes(shopName)) this.savedShops.push(shopName); this.shopMemberMap[shopName] = [...this.activeShopMembers]; this.expandedShopPanels[shopName] = true; this.saveData(); this.showToast(); } },
             toggleActiveMembers(all) { this.activeShopMembers = all ? [...this.people] : []; this.pruneCustomSplitInputs(); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
-            toggleActiveMember(p) { const idx = this.activeShopMembers.indexOf(p); if(idx > -1) { this.activeShopMembers.splice(idx, 1); delete this.customAmounts[p]; delete this.customPercents[p]; } else this.activeShopMembers.push(p); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
+            toggleActiveMember(p) { const idx = this.activeShopMembers.indexOf(p); if(idx > -1) { this.activeShopMembers.splice(idx, 1); delete this.customAmounts[p]; delete this.customPercents[p]; delete this.customAmountInputs[p]; delete this.customPercentInputs[p]; } else this.activeShopMembers.push(p); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
             startEditMember(i) { this.editingMemberIdx = i; this.tempMemberName = this.people[i]; },
             saveEditMember(i) { if(this.tempMemberName) { this.people[i] = this.tempMemberName; this.editingMemberIdx = -1; this.saveData(); } },
             saveExpense() { const d = { id: this.form.id || Date.now(), shop: this.currentShop, item: this.form.item, price: this.form.price, payer: this.form.payer, consumers: [...this.form.consumers], customSplit: this.splitMode === 'custom', customAmounts: this.getCustomAmountsForSave() }; if(this.form.id) { const idx = this.expenses.findIndex(e => e.id === this.form.id); this.expenses[idx] = d; } else this.expenses.push(d); this.resetForm(); this.saveData(); this.showToast(); },
-            resetForm() { this.form = { id: null, item: '', price: null, payer: '', consumers: [...this.activeShopMembers] }; this.customAmounts = {}; this.customPercents = {}; this.customInputMode = 'amount'; this.editingIndex = null; this.updateFormPayer(); },
+            resetForm() { this.form = { id: null, item: '', price: null, payer: '', consumers: [...this.activeShopMembers] }; this.customAmounts = {}; this.customPercents = {}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.customInputMode = 'amount'; this.editingIndex = null; this.updateFormPayer(); },
             toggleConsumers(all) { this.form.consumers = all ? [...this.activeShopMembers] : []; },
             toggleConsumer(p) { if(this.form.consumers.includes(p)) this.form.consumers = this.form.consumers.filter(x => x !== p); else this.form.consumers.push(p); },
             updateFormPayer() { if(this.shopDefaults[this.currentShop]) this.form.payer = this.shopDefaults[this.currentShop]; },
             toSplitNumber(v) {
+                if (typeof v === 'string') v = v.replace(',', '.');
                 const n = parseFloat(v);
                 return Number.isFinite(n) && n > 0 ? n : 0;
             },
             roundSplitValue(v) { return Math.round((v + Number.EPSILON) * 100) / 100; },
+            formatInputDecimal(v) {
+                const n = this.toSplitNumber(v);
+                return n > 0 ? this.roundSplitValue(n).toString() : '';
+            },
+            sanitizeDecimalInput(raw) {
+                return String(raw || '')
+                    .replace(',', '.')
+                    .replace(/[^0-9.]/g, '')
+                    .replace(/(\..*)\./g, '$1');
+            },
             setCustomInputMode(mode) {
                 this.customInputMode = mode;
                 if (mode === 'percent') this.syncCustomPercentsFromAmounts();
                 else this.syncCustomAmountsFromPercents();
             },
             getCustomAmountDisplay(p) {
+                if (Object.prototype.hasOwnProperty.call(this.customAmountInputs, p)) return this.customAmountInputs[p];
                 const value = this.toSplitNumber(this.customAmounts[p]);
-                return value > 0 ? value : '';
+                return value > 0 ? this.formatInputDecimal(value) : '';
             },
             getCustomPercentDisplay(p) {
+                if (Object.prototype.hasOwnProperty.call(this.customPercentInputs, p)) return this.customPercentInputs[p];
                 const value = this.toSplitNumber(this.customPercents[p]);
-                return value > 0 ? value : '';
+                return value > 0 ? this.formatInputDecimal(value) : '';
             },
             getCustomAmountLimit(p) {
                 const price = this.toSplitNumber(this.form.price);
@@ -2095,24 +2875,99 @@
                 return this.roundSplitValue(Math.max(100 - otherTotal, 0));
             },
             handleCustomInput(p, e) {
+                let raw = this.sanitizeDecimalInput(e.target.value);
+                this.customAmountInputs[p] = raw;
+                e.target.value = raw;
+                if (raw === '' || raw === '.') {
+                    this.customAmounts[p] = 0;
+                    this.customPercents[p] = 0;
+                    return;
+                }
                 const max = this.getCustomAmountLimit(p);
-                const value = this.roundSplitValue(Math.min(this.toSplitNumber(e.target.value), max));
+                const typed = this.toSplitNumber(raw);
+                const value = this.roundSplitValue(Math.min(typed, max));
                 this.customAmounts[p] = value;
                 this.customPercents[p] = this.form.price > 0 ? this.roundSplitValue((value / this.form.price) * 100) : 0;
-                e.target.value = value > 0 ? value : '';
+                if (typed > max) {
+                    raw = this.formatInputDecimal(value);
+                    this.customAmountInputs[p] = raw;
+                    e.target.value = raw;
+                }
             },
             handleCustomPercentInput(p, e) {
+                let raw = this.sanitizeDecimalInput(e.target.value);
+                this.customPercentInputs[p] = raw;
+                e.target.value = raw;
+                if (raw === '' || raw === '.') {
+                    this.customPercents[p] = 0;
+                    this.customAmounts[p] = 0;
+                    return;
+                }
                 const max = this.getCustomPercentLimit(p);
-                const percent = this.roundSplitValue(Math.min(this.toSplitNumber(e.target.value), max));
+                const typed = this.toSplitNumber(raw);
+                const percent = this.roundSplitValue(Math.min(typed, max));
                 this.customPercents[p] = percent;
                 this.customAmounts[p] = this.roundSplitValue(((parseFloat(this.form.price) || 0) * percent) / 100);
-                e.target.value = percent > 0 ? percent : '';
+                if (typed > max) {
+                    raw = this.formatInputDecimal(percent);
+                    this.customPercentInputs[p] = raw;
+                    e.target.value = raw;
+                }
+            },
+            normalizeCustomInput(p) {
+                if (this.customInputMode === 'amount') {
+                    this.customAmounts[p] = this.roundSplitValue(this.toSplitNumber(this.customAmounts[p]));
+                    this.customPercents[p] = this.form.price > 0 ? this.roundSplitValue((this.customAmounts[p] / this.form.price) * 100) : 0;
+                    this.customAmountInputs[p] = this.formatInputDecimal(this.customAmounts[p]);
+                } else {
+                    this.customPercents[p] = this.roundSplitValue(this.toSplitNumber(this.customPercents[p]));
+                    this.customAmounts[p] = this.roundSplitValue(((parseFloat(this.form.price) || 0) * this.customPercents[p]) / 100);
+                    this.customPercentInputs[p] = this.formatInputDecimal(this.customPercents[p]);
+                }
+            },
+            openCustomCalculator(p) {
+                this.calculatorTarget = p;
+                const value = this.customInputMode === 'amount' ? this.customAmounts[p] : this.customPercents[p];
+                this.calculatorExpression = this.toSplitNumber(value) > 0 ? this.formatInputDecimal(value) : '';
+            },
+            closeCustomCalculator() { this.calculatorTarget = ''; this.calculatorExpression = ''; },
+            appendCalc(token) { this.calculatorExpression = `${this.calculatorExpression || ''}${token}`; },
+            backspaceCalc() { this.calculatorExpression = (this.calculatorExpression || '').slice(0, -1); },
+            clearCalc() { this.calculatorExpression = ''; },
+            evaluateCalcExpression(expr) {
+                const cleaned = String(expr || '').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(',', '.');
+                if (!/^[0-9+\-*/().\s]+$/.test(cleaned)) return NaN;
+                try {
+                    const result = Function('"use strict"; return (' + cleaned + ')')();
+                    return Number.isFinite(result) ? result : NaN;
+                } catch (err) {
+                    return NaN;
+                }
+            },
+            applyCalcToMember(p) {
+                const result = this.evaluateCalcExpression(this.calculatorExpression);
+                if (!Number.isFinite(result) || result < 0) { alert('กรุณาใส่สูตรคำนวณให้ถูกต้อง'); return; }
+                if (this.customInputMode === 'amount') {
+                    const max = this.getCustomAmountLimit(p);
+                    const value = this.roundSplitValue(Math.min(result, max));
+                    this.customAmounts[p] = value;
+                    this.customPercents[p] = this.form.price > 0 ? this.roundSplitValue((value / this.form.price) * 100) : 0;
+                    this.customAmountInputs[p] = this.formatInputDecimal(value);
+                } else {
+                    const max = this.getCustomPercentLimit(p);
+                    const percent = this.roundSplitValue(Math.min(result, max));
+                    this.customPercents[p] = percent;
+                    this.customAmounts[p] = this.roundSplitValue(((parseFloat(this.form.price) || 0) * percent) / 100);
+                    this.customPercentInputs[p] = this.formatInputDecimal(percent);
+                }
+                this.closeCustomCalculator();
             },
             syncCustomPercentsFromAmounts() {
                 const price = this.toSplitNumber(this.form.price);
                 this.activeShopMembers.forEach(p => {
                     const amount = this.toSplitNumber(this.customAmounts[p]);
                     this.customPercents[p] = price > 0 ? this.roundSplitValue((amount / price) * 100) : 0;
+                    this.customPercentInputs[p] = this.formatInputDecimal(this.customPercents[p]);
                 });
                 this.pruneCustomSplitInputs();
             },
@@ -2121,6 +2976,7 @@
                 this.activeShopMembers.forEach(p => {
                     const percent = this.toSplitNumber(this.customPercents[p]);
                     this.customAmounts[p] = this.roundSplitValue((price * percent) / 100);
+                    this.customAmountInputs[p] = this.formatInputDecimal(this.customAmounts[p]);
                 });
                 this.pruneCustomSplitInputs();
             },
@@ -2206,7 +3062,7 @@
             removeBackup(idx) { if(confirm('ลบประวัติ?')) { if (this.backups[idx].id === this.currentLoadedId) this.currentLoadedId = null; this.backups.splice(idx, 1); this.saveBackupsToStorage(); } },
             resetAll() { if(confirm('ล้างข้อมูลทั้งหมด?')) { localStorage.removeItem('bill_v1_0_0'); localStorage.removeItem('current_bill_id'); location.reload(); } },
             onDragStartShop(e, i) { e.dataTransfer.setData('type', 'shop'); e.dataTransfer.setData('index', i); },
-            onDropShop(e, t) { if(e.dataTransfer.getData('type')==='shop') { const f = e.dataTransfer.getData('index'); const item = this.savedShops.splice(f, 1)[0]; this.savedShops.splice(t, 0, item); this.saveData(); } },
+            onDropShop(e, t) { if(this.shopManagerMode !== 'editor') return; if(e.dataTransfer.getData('type')==='shop') { const f = e.dataTransfer.getData('index'); const item = this.savedShops.splice(f, 1)[0]; this.savedShops.splice(t, 0, item); this.saveData(); } },
             onDragStartItem(e, id) { e.dataTransfer.setData('type', 'item'); e.dataTransfer.setData('id', id); },
             onDropItem(e, tId) { if(e.dataTransfer.getData('type')==='item') { const fId = e.dataTransfer.getData('id'); const f = this.expenses.findIndex(x=>x.id==fId); const t = this.expenses.findIndex(x=>x.id==tId); if(f>-1 && t>-1) { const item = this.expenses.splice(f, 1)[0]; this.expenses.splice(t, 0, item); this.saveData(); } } },
             captureReceipt(format) { const oz = this.zoomLevel; this.zoomLevel = 1; this.$nextTick(() => { const el = document.getElementById('captureArea'); html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f3f4f6' }).then(canvas => { const link = document.createElement('a'); link.download = `Bill_${new Date().getTime()}.${format}`; link.href = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9); link.click(); this.zoomLevel = oz; }); }); }
