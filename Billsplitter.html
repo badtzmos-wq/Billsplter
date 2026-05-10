@@ -87,6 +87,7 @@
         /* ── Topbar ── */
         .topbar {
             display: flex; justify-content: space-between; align-items: center;
+            gap: 12px;
             padding: 14px 0 20px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 28px;
@@ -628,6 +629,25 @@
         /* ── Drag handle ── */
         .drag-handle { cursor: grab; color: var(--ink-3); padding: 0 8px; transition: color 0.15s; }
         .drag-handle:hover { color: var(--accent); }
+        .group-drag-handle {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            background: transparent;
+            color: var(--ink-3);
+            border-radius: var(--r-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            flex: 0 0 auto;
+        }
+        .group-drag-handle:hover {
+            background: var(--shop-soft);
+            color: var(--shop);
+        }
+        .group-drag-handle:active,
+        .drag-handle:active { cursor: grabbing; }
         .draggable-item.dragging { opacity: 0.4; }
 
         /* ── Table ── */
@@ -680,12 +700,21 @@
         .group-name {
             font-weight: 600; font-size: 0.9rem; color: var(--shop);
             display: flex; align-items: center; gap: 8px;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+        .group-name-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .group-badge {
             font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500;
             background: var(--shop-soft); color: var(--shop);
             border: 1px solid var(--shop-border);
             padding: 2px 10px; border-radius: var(--r-pill);
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
         .desktop-expense-table { display: block; }
         .mobile-expense-list { display: none; }
@@ -696,6 +725,7 @@
             padding: 14px;
             box-shadow: var(--shadow-sm);
         }
+        .expense-mobile-card[draggable="true"] { cursor: grab; }
         .expense-mobile-top {
             display: flex;
             justify-content: space-between;
@@ -1329,10 +1359,21 @@
         .receipt-center > .bg-dark {
             border-radius: 22px !important;
             box-shadow: 0 12px 26px rgba(28,25,23,0.18) !important;
+            max-width: 100%;
+            overflow: hidden;
         }
         .receipt-center > .bg-dark small {
             color: rgba(255,255,255,0.58) !important;
             letter-spacing: 0.08em;
+        }
+        .receipt-grand-total-amount {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: clip;
+            white-space: nowrap;
+            line-height: 1.08;
+            letter-spacing: 0;
         }
         .receipt-right { width: 320px; min-width: 320px; max-width: 320px; display: flex; flex-direction: column; align-items: center; grid-column: 3; position: relative; z-index: 1; }
         .receipt-qr-frame {
@@ -2009,11 +2050,14 @@
         <!-- Right Panel: Expense List -->
         <div class="col-lg-8 col-xl-9">
             <div class="panel-title"><i class="fa-solid fa-list-ul me-1"></i>รายการที่บันทึกไว้</div>
-            <div v-for="group in groupedExpenses" :key="group.name" class="group-card">
+            <div v-for="group in groupedExpenses" :key="group.name" class="group-card" @dragover.prevent @drop="onDropGroup($event, group.name)">
                 <div class="group-header">
                     <div class="group-name">
+                        <button type="button" class="group-drag-handle" draggable="true" @dragstart="onDragStartGroup($event, group.name)" title="Drag to reorder">
+                            <i class="fa-solid fa-grip-vertical" style="font-size:0.85rem"></i>
+                        </button>
                         <i class="fa-solid fa-store" style="font-size:0.8rem"></i>
-                        {{ group.name }}
+                        <span class="group-name-text">{{ group.name }}</span>
                     </div>
                     <span class="group-badge">{{ formatNumber(group.total) }} ฿</span>
                 </div>
@@ -2030,7 +2074,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(ex, idx) in group.items" :key="ex.id" class="text-center draggable-item" draggable="true" @dragstart="onDragStartItem($event, ex.id)" @drop="onDropItem($event, ex.id)" @dragover.prevent>
+                            <tr v-for="(ex, idx) in group.items" :key="ex.id" class="text-center draggable-item" draggable="true" @dragstart="onDragStartItem($event, ex.id)" @drop.stop="onDropItem($event, ex.id)" @dragover.prevent.stop>
                                 <td class="drag-handle"><i class="fa-solid fa-grip-vertical" style="font-size:0.8rem"></i></td>
                                 <td class="sticky-col-cell text-start ps-3">{{ ex.item }}</td>
                                 <td class="price-num">{{ formatNumber(ex.price) }}</td>
@@ -2048,7 +2092,7 @@
                     </table>
                 </div>
                 <div class="mobile-expense-list">
-                    <div v-for="ex in group.items" :key="ex.id" class="expense-mobile-card">
+                    <div v-for="ex in group.items" :key="ex.id" class="expense-mobile-card draggable-item" draggable="true" @dragstart="onDragStartItem($event, ex.id)" @drop.stop="onDropItem($event, ex.id)" @dragover.prevent.stop>
                         <div class="expense-mobile-top">
                             <div class="expense-mobile-item">{{ ex.item }}</div>
                             <div class="expense-mobile-price">{{ formatNumber(ex.price) }}</div>
@@ -2446,7 +2490,7 @@
                         <div class="receipt-center">
                             <div class="bg-dark text-white p-4 rounded-4 mb-4 text-center shadow-sm">
                                 <small class="opacity-50 d-block mb-2 text-uppercase tracking-wide">Grand Total</small>
-                                <h1 class="fw-bold text-warning m-0 display-5">{{ formatCurrency(totalTripPrice) }}</h1>
+                                <h1 class="fw-bold text-warning m-0 receipt-grand-total-amount" :style="{ fontSize: getReceiptTotalFontSize(totalTripPrice) }">{{ formatCurrency(totalTripPrice) }}</h1>
                             </div>
                             <h5 class="fw-bold mb-3 text-center text-primary bg-light py-2 rounded border border-light">ยอดสุทธิ (Net Clearing)</h5>
                             <table class="table table-bordered align-middle text-center shadow-sm bg-white">
@@ -3004,6 +3048,13 @@
                 return result;
             },
             formatCurrency(v) { return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB' }).format(v); },
+            getReceiptTotalFontSize(v) {
+                const length = this.formatCurrency(v).length;
+                if (length >= 14) return '1.85rem';
+                if (length >= 12) return '2.1rem';
+                if (length >= 10) return '2.45rem';
+                return '2.85rem';
+            },
             formatNumber(n) { return n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }); },
             getAmountPerPerson(ex, p) { if(ex.customSplit) return ex.customAmounts[p] || 0; return ex.consumers.includes(p) ? ex.price / ex.consumers.length : 0; },
             getShopSubtotal(items, p) { return items.reduce((s, ex) => s + this.getAmountPerPerson(ex, p), 0); },
@@ -3063,8 +3114,33 @@
             resetAll() { if(confirm('ล้างข้อมูลทั้งหมด?')) { localStorage.removeItem('bill_v1_0_0'); localStorage.removeItem('current_bill_id'); location.reload(); } },
             onDragStartShop(e, i) { e.dataTransfer.setData('type', 'shop'); e.dataTransfer.setData('index', i); },
             onDropShop(e, t) { if(this.shopManagerMode !== 'editor') return; if(e.dataTransfer.getData('type')==='shop') { const f = e.dataTransfer.getData('index'); const item = this.savedShops.splice(f, 1)[0]; this.savedShops.splice(t, 0, item); this.saveData(); } },
-            onDragStartItem(e, id) { e.dataTransfer.setData('type', 'item'); e.dataTransfer.setData('id', id); },
-            onDropItem(e, tId) { if(e.dataTransfer.getData('type')==='item') { const fId = e.dataTransfer.getData('id'); const f = this.expenses.findIndex(x=>x.id==fId); const t = this.expenses.findIndex(x=>x.id==tId); if(f>-1 && t>-1) { const item = this.expenses.splice(f, 1)[0]; this.expenses.splice(t, 0, item); this.saveData(); } } },
+            onDragStartGroup(e, shopName) { e.dataTransfer.setData('type', 'shop-group'); e.dataTransfer.setData('shop', shopName); e.dataTransfer.effectAllowed = 'move'; },
+            onDropGroup(e, targetShop) {
+                if(e.dataTransfer.getData('type') !== 'shop-group') return;
+                const fromShop = e.dataTransfer.getData('shop');
+                const from = this.savedShops.indexOf(fromShop);
+                const to = this.savedShops.indexOf(targetShop);
+                if(from < 0 || to < 0 || from === to) return;
+                const item = this.savedShops.splice(from, 1)[0];
+                this.savedShops.splice(to, 0, item);
+                this.saveData();
+            },
+            onDragStartItem(e, id) { e.dataTransfer.setData('type', 'item'); e.dataTransfer.setData('id', id); e.dataTransfer.effectAllowed = 'move'; },
+            onDropItem(e, tId) {
+                const type = e.dataTransfer.getData('type');
+                const targetExpense = this.expenses.find(x=>x.id==tId);
+                if(type === 'shop-group' && targetExpense) { this.onDropGroup(e, targetExpense.shop); return; }
+                if(type === 'item') {
+                    const fId = e.dataTransfer.getData('id');
+                    const f = this.expenses.findIndex(x=>x.id==fId);
+                    const t = this.expenses.findIndex(x=>x.id==tId);
+                    if(f>-1 && t>-1) {
+                        const item = this.expenses.splice(f, 1)[0];
+                        this.expenses.splice(t, 0, item);
+                        this.saveData();
+                    }
+                }
+            },
             captureReceipt(format) { const oz = this.zoomLevel; this.zoomLevel = 1; this.$nextTick(() => { const el = document.getElementById('captureArea'); html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f3f4f6' }).then(canvas => { const link = document.createElement('a'); link.download = `Bill_${new Date().getTime()}.${format}`; link.href = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9); link.click(); this.zoomLevel = oz; }); }); }
         }
     }).mount('#app');
