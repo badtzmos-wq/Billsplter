@@ -1443,6 +1443,22 @@
         }
 
         .net-amount-big { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 800; line-height: 1; }
+        .receipt-net-table th,
+        .receipt-net-table td {
+            padding: 8px 6px;
+            white-space: nowrap;
+        }
+        .receipt-net-table th:first-child,
+        .receipt-net-table td:first-child {
+            width: 25%;
+        }
+        .receipt-net-table .net-amount-big {
+            font-size: 1.08rem;
+        }
+        .receipt-net-table .status-badge {
+            padding: 3px 6px;
+            font-size: 0.64rem;
+        }
 
         @supports (-webkit-touch-callout: none) {
             .receipt-container {
@@ -2493,11 +2509,12 @@
                                 <h1 class="fw-bold text-warning m-0 receipt-grand-total-amount" :style="{ fontSize: getReceiptTotalFontSize(totalTripPrice) }">{{ formatCurrency(totalTripPrice) }}</h1>
                             </div>
                             <h5 class="fw-bold mb-3 text-center text-primary bg-light py-2 rounded border border-light">ยอดสุทธิ (Net Clearing)</h5>
-                            <table class="table table-bordered align-middle text-center shadow-sm bg-white">
-                                <thead class="table-light small"><tr><th class="text-start ps-3">ชื่อ</th><th>จ่ายก่อน</th><th>สุทธิ</th></tr></thead>
+                            <table class="table table-bordered align-middle text-center shadow-sm bg-white receipt-net-table">
+                                <thead class="table-light small"><tr><th class="text-start ps-3">ชื่อ</th><th>ใช้ไป</th><th>จ่ายก่อน</th><th>สุทธิ</th></tr></thead>
                                 <tbody>
                                     <tr v-for="p in summary" :key="p.name">
                                         <td class="fw-bold text-start ps-3">{{ p.name }}</td>
+                                        <td class="text-muted small">{{ formatNumber(p.consumed) }}</td>
                                         <td class="text-muted small">{{ formatNumber(p.paid) }}</td>
                                         <td>
                                             <div class="d-flex justify-content-between align-items-center px-2">
@@ -2615,7 +2632,7 @@
                     if(ex.customSplit) { Object.entries(ex.customAmounts).forEach(([p, amt]) => { if(map[p]) map[p].consumed += amt; }); } 
                     else { ex.consumers.forEach(c => { if(map[c]) map[c].consumed += (ex.price / ex.consumers.length); }); }
                 });
-                return Object.values(map).map(p => { p.net = Math.round(p.paid - p.consumed); return p; }).sort((a,b) => b.net - a.net);
+                return Object.values(map).map(p => { p.consumed = Math.round(p.consumed); p.net = Math.round(p.paid - p.consumed); return p; }).sort((a,b) => b.net - a.net);
             },
             settlements() {
                 const creditors = this.summary
