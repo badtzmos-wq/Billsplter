@@ -64,6 +64,15 @@
             --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
 
+            /* App shell sizing */
+            --app-header-height: 72px;
+            --app-outer-padding-x: 24px;
+            --app-outer-padding-y: 12px;
+            --app-main-gap: 20px;
+            --panel-scrollbar-size: 8px;
+            --panel-scrollbar-thumb: rgba(168,159,152,0.58);
+            --panel-scrollbar-thumb-hover: rgba(107,101,96,0.72);
+
             /* Bootstrap overrides */
             --bs-font-sans-serif: var(--font-body);
             --bs-body-bg: var(--bg);
@@ -73,6 +82,11 @@
 
         /* ── Base ── */
         * { box-sizing: border-box; }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: var(--font-body);
             background-color: var(--bg);
@@ -83,14 +97,71 @@
 
         /* ── App Container ── */
         #app { max-width: 1600px; margin: 0 auto; }
+        /* App shell: header stays visible while each panel scrolls independently. */
+        #app.app-shell {
+            height: 100dvh;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            overflow: hidden;
+            padding: var(--app-outer-padding-y) var(--app-outer-padding-x) 0 !important;
+        }
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: var(--bg);
+            height: var(--app-header-height);
+            flex-shrink: 0;
+            min-height: 0;
+        }
+        .app-main {
+            /* min-height: 0 lets grid children own their scroll instead of expanding the page. */
+            min-height: 0;
+            display: grid;
+            grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+            gap: var(--app-main-gap);
+            overflow: hidden;
+            padding: 16px 0 18px;
+            align-items: stretch;
+        }
+        .left-panel,
+        .right-panel {
+            height: 100%;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 4px 6px 30px;
+            scrollbar-color: var(--panel-scrollbar-thumb) transparent;
+            scrollbar-width: thin;
+        }
+        .right-panel { min-width: 0; }
+        .left-panel::-webkit-scrollbar,
+        .right-panel::-webkit-scrollbar { width: var(--panel-scrollbar-size); }
+        .left-panel::-webkit-scrollbar-thumb,
+        .right-panel::-webkit-scrollbar-thumb {
+            background: var(--panel-scrollbar-thumb);
+            border-radius: var(--r-pill);
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        .left-panel::-webkit-scrollbar-thumb:hover,
+        .right-panel::-webkit-scrollbar-thumb:hover {
+            background: var(--panel-scrollbar-thumb-hover);
+            background-clip: content-box;
+        }
+        .left-panel::-webkit-scrollbar-track,
+        .right-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
         /* ── Topbar ── */
         .topbar {
             display: flex; justify-content: space-between; align-items: center;
             gap: 12px;
-            padding: 14px 0 20px;
+            height: var(--app-header-height);
+            padding: 8px 0 12px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 28px;
+            margin-bottom: 0;
         }
         .app-logo { display: flex; align-items: center; gap: 10px; }
         .app-logo-icon {
@@ -113,6 +184,36 @@
             transition: box-shadow 0.2s ease;
         }
         .app-card:hover { box-shadow: var(--shadow-md); }
+
+        .left-panel-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 0 2px;
+        }
+        .left-panel-tab {
+            border: 0;
+            border-radius: var(--r-pill);
+            min-height: 36px;
+            padding: 7px 12px;
+            background: var(--surface-2);
+            color: var(--ink-3);
+            font-size: 0.86rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: all 0.15s ease;
+        }
+        .left-panel-tab:hover {
+            background: var(--surface);
+            color: var(--ink-2);
+            box-shadow: var(--shadow-sm);
+        }
+        .left-panel-tab.active {
+            background: #A49B94;
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
 
         .card-label {
             font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
@@ -1501,7 +1602,7 @@
         }
 
         /* Sticky side column */
-        .sticky-side { position: sticky; top: 16px; }
+        .sticky-side { position: static; min-width: 0; }
 
         /* Animate cards in */
         @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
@@ -1527,6 +1628,35 @@
         .summary-toolbar .btn-group { flex: 0 0 auto; }
 
         @media (max-width: 991.98px) {
+            html,
+            body {
+                height: auto;
+                overflow: auto;
+            }
+            #app.app-shell {
+                min-height: 100dvh;
+                height: auto;
+                display: block;
+                overflow: visible;
+            }
+            .app-header {
+                height: auto;
+            }
+            .app-main {
+                display: block;
+                min-height: auto;
+                height: auto;
+                max-height: none;
+                overflow: visible;
+                padding: 16px 0 24px;
+            }
+            .left-panel,
+            .right-panel {
+                height: auto;
+                min-height: auto;
+                overflow: visible;
+                padding: 0;
+            }
             #app.container-fluid {
                 padding-left: 16px !important;
                 padding-right: 16px !important;
@@ -1734,7 +1864,7 @@
 </head>
 <body>
 
-<div id="app" class="container-fluid px-4 py-3">
+<div id="app" class="app-shell container-fluid px-4 py-3">
 
     <!-- Toast -->
     <div class="toast-container">
@@ -1749,7 +1879,7 @@
     </div>
 
     <!-- Topbar -->
-    <div class="topbar">
+    <header class="topbar app-header">
         <div class="app-logo">
             <div class="app-logo-icon"><i class="fa-solid fa-receipt" style="font-size:0.9rem"></i></div>
             <div>
@@ -1769,13 +1899,19 @@
                 <i class="fa-solid fa-chart-bar me-1" style="font-size:0.8rem"></i> สรุปผลลัพธ์
             </button>
         </div>
-    </div>
+    </header>
 
-    <div class="row g-4">
-        <div class="col-lg-4 col-xl-3"> 
+    <main class="app-main">
+        <aside class="left-panel"> 
             <div class="sticky-side">
+                <div class="left-panel-tabs" role="tablist" aria-label="Control panel sections">
+                    <button type="button" class="left-panel-tab" :class="{ active: leftPanelTab === 'member' }" @click="leftPanelTab = 'member'">Member</button>
+                    <button type="button" class="left-panel-tab" :class="{ active: leftPanelTab === 'manager' }" @click="leftPanelTab = 'manager'">Manager</button>
+                    <button type="button" class="left-panel-tab" :class="{ active: leftPanelTab === 'payment' }" @click="leftPanelTab = 'payment'">Payment</button>
+                </div>
+
                 <!-- Member Card -->
-                <div class="app-card py-3">
+                <div class="app-card py-3" v-show="leftPanelTab === 'member'">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="card-label" style="flex:1;margin-bottom:0">
                             <i class="fa-solid fa-users" style="color:var(--ink-3);font-size:0.75rem"></i>
@@ -1807,7 +1943,7 @@
                 </div>
 
                 <!-- Shop Card — inline shop workspace v2.2 -->
-                <div class="app-card card-shop">
+                <div class="app-card card-shop" v-show="leftPanelTab === 'manager'">
                     <div class="shop-workspace-head">
                         <div style="display:flex;align-items:center;gap:8px;min-width:0">
                             <div style="width:20px;height:20px;border-radius:50%;background:var(--shop);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
@@ -1941,7 +2077,7 @@
                 </div>
 
                 <!-- Add Item Card -->
-                <div class="app-card card-add">
+                <div class="app-card card-add" v-show="leftPanelTab === 'manager'">
                     <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">
                         <i class="fa-solid fa-plus me-1"></i>เพิ่มรายการ
                     </div>
@@ -2039,7 +2175,7 @@
                 </div>
 
                 <!-- Payment Card -->
-                <div class="app-card">
+                <div class="app-card" v-show="leftPanelTab === 'payment'">
                     <div class="card-label"><i class="fa-solid fa-qrcode" style="font-size:0.72rem"></i>ช่องทางรับเงิน</div>
                     <select class="form-select mb-2" v-model="payment.type">
                         <option value="qrcode">QR Code</option>
@@ -2061,10 +2197,10 @@
                     <input type="text" class="form-control" v-model="payment.name" placeholder="ชื่อบัญชี">
                 </div>
             </div>
-        </div>
+        </aside>
 
         <!-- Right Panel: Expense List -->
-        <div class="col-lg-8 col-xl-9">
+        <section class="right-panel">
             <div class="panel-title"><i class="fa-solid fa-list-ul me-1"></i>รายการที่บันทึกไว้</div>
             <div v-for="group in groupedExpenses" :key="group.name" class="group-card" @dragover.prevent @drop="onDropGroup($event, group.name)">
                 <div class="group-header">
@@ -2152,8 +2288,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
 
     <!-- Custom Split Calculator Popup -->
@@ -2560,13 +2696,13 @@
     createApp({
         data() {
             return {
-                zoomLevel: 1, people: [], currentShop: '', savedShops: [], shopDefaults: {}, activeShopMembers: [],
+                zoomLevel: 1, leftPanelTab: 'member', people: [], currentShop: '', savedShops: [], shopDefaults: {}, activeShopMembers: [],
                 expenses: [], backups: [], currentLoadedId: null, isModified: false,
                 form: { id: null, item: '', price: null, payer: '', consumers: [] },
                 splitMode: 'equal', customInputMode: 'amount', customAmounts: {}, customPercents: {},
                 customAmountInputs: {}, customPercentInputs: {},
                 calculatorTarget: '', calculatorExpression: '',
-                appVersion: 'v2.0.4', appStatus: 'inline-shop-mode-simplification',
+                appVersion: 'v2.0.4', appStatus: 'restored-app-shell-left-panel-tabs',
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
                 editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {},
@@ -2881,7 +3017,7 @@
             },
             selectShopInline(n) { if(!n) return; this.currentShop = n; this.selectedShopForManager = n; this.tempEditShopName = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); },
             selectShopFromManager(n) { this.selectShopInline(n); this.expandedShopPanels[n] = true; bootstrap.Modal.getInstance(document.getElementById('shopManagerModal')).hide(); },
-            editExpense(ex) { this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+            editExpense(ex) { this.leftPanelTab = 'manager'; this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
             onShopInputChange(n) { if (this.shopMemberMap[n]) { this.activeShopMembers = [...this.shopMemberMap[n]]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); } },
             manualAddShop() { const shopName = this.currentShop.trim(); if(shopName) { this.currentShop = shopName; if(!this.savedShops.includes(shopName)) this.savedShops.push(shopName); this.shopMemberMap[shopName] = [...this.activeShopMembers]; this.expandedShopPanels[shopName] = true; this.saveData(); this.showToast(); } },
             toggleActiveMembers(all) { this.activeShopMembers = all ? [...this.people] : []; this.pruneCustomSplitInputs(); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
