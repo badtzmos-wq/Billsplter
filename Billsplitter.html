@@ -94,6 +94,7 @@
             font-size: 0.9rem;
             -webkit-font-smoothing: antialiased;
         }
+        [v-cloak] { display: none !important; }
 
         /* ── App Container ── */
         #app { max-width: 1600px; margin: 0 auto; }
@@ -1864,7 +1865,7 @@
 </head>
 <body>
 
-<div id="app" class="app-shell container-fluid px-4 py-3">
+<div id="app" class="app-shell container-fluid px-4 py-3" v-cloak>
 
     <!-- Toast -->
     <div class="toast-container">
@@ -2702,7 +2703,7 @@
                 splitMode: 'equal', customInputMode: 'amount', customAmounts: {}, customPercents: {},
                 customAmountInputs: {}, customPercentInputs: {},
                 calculatorTarget: '', calculatorExpression: '',
-                appVersion: 'v2.0.4', appStatus: 'restored-app-shell-left-panel-tabs',
+                appVersion: 'v2.0.4', appStatus: 'vue-cloak-template-guard',
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
                 editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {},
