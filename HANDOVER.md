@@ -1,10 +1,12 @@
-# Manager hierarchy and calculator handover
+# BillSpliter v2.2.0 handover
 
-Date: 2026-10-20 (Asia/Bangkok). Branch: `feat/manager-hierarchy-calculator`.
-Release preparation: `v2.1.0`. Publishing, PR, merge, and deployment status must be checked on GitHub; this document records the tested source and release procedure.
+Date: 2026-10-20 (Asia/Bangkok). Branch: `feat/share-summary-image`.
+Release preparation: `v2.2.0`. Publishing, PR, merge, and deployment status must be checked on GitHub; this document records the tested source and release procedure.
 
 ## Delivered scope
 
+- Copy the full summary PNG to the clipboard, then paste into LINE (Ctrl+V on Windows). The user confirmed desktop copying worked during preview testing. Native sharing was removed at the user's request; JPG/PNG downloads remain available.
+- Prepare images after Summary opens; wait for fonts/QR decoding, reject stale asynchronous results, and render at full size on a cloned document without changing live zoom. Clipboard failure can be retried; unsupported browsers retain manual downloads.
 - `Billsplitter.html`: compact shop context, prominent expense entry, calculator with apply-to-price/member amount/member percent and keyboard/focus handling.
 - Earlier regression fixes retained: shop changes prune stale allocations and raw input maps; calculator rounding overflow/non-finite prices cannot be applied/saved through the form.
 - This review pass fixed cancelled edits mutating saved consumer lists; deleting an edited item/shop leaving a stale edit ID; final-shop deletion leaving active members/split inputs; member rename leaving payer, consumer, shop/default, calculator, and split references under the old name. Names are trimmed and blank/duplicate add/rename attempts are rejected to prevent split-map collisions.
@@ -12,7 +14,7 @@ Release preparation: `v2.1.0`. Publishing, PR, merge, and deployment status must
 
 ## Verification
 
-Fresh results: repository smoke **80 assertions / 8 scenarios / 0 failures**; existing temporary integration checks **60 assertions** and prior regressions **17 assertions**, all passing. Five regression scenarios failed before their fixes (cancel edit, edited-item deletion, both shop-deletion routes, and member rename). No Vue/runtime warnings in tested scenarios.
+Repository smoke covers 80 assertions across 8 scenarios. `tests/copy-receipt.cjs` adds clipboard, rendering, invalidation, retry and download checks. `tests/release.cjs` checks version/entry/cache consistency. All must pass before publication. Clipboard and image rasterization are mocked in automated tests; see `tests/COPY_RECEIPT_QA.md` for manual QA.
 
 The smoke suite mounts the actual Vue template and covers member creation/rename validation; shop creation, selection, rename, deletion and access guards; item add/edit/cancel/delete; calculator formulas, overflow, invalid/negative results, amount/percent caps, Enter/Escape and focus return; summary DOM rendering and an exact-balance fixture; persistence round-trip in a fresh app instance; stale split pruning.
 
@@ -23,6 +25,7 @@ $smokeDeps = Join-Path $env:TEMP 'billsplitter-verify'
 npm.cmd install --prefix $smokeDeps --no-audit --no-fund vue@3.5.44 jsdom@26.1.0
 $env:NODE_PATH = Join-Path $smokeDeps 'node_modules'
 node tests/smoke.cjs
+node tests/copy-receipt.cjs
 node tests/release.cjs
 git -c core.whitespace=cr-at-eol diff --check
 ```
@@ -31,7 +34,7 @@ The existing temporary suites remain at `$smokeDeps/check.cjs` and `$smokeDeps/r
 
 ## Preview and remaining checks
 
-Open **`Billsplitter.html`** through the local server for review. For release `v2.1.0`, `index.html`, the PWA manifest and the mobile-server entry now target it. The service-worker release cache is `billspliter-v2-1-0`; activation removes only old BillSpliter caches. `tests/release.cjs` verifies exact-case cache assets and preserves unrelated caches. The persistence schema and legacy HTML file remain unchanged.
+Open **`Billsplitter.html`** through the local server for review. For release `v2.2.0`, `index.html`, the PWA manifest and the mobile-server entry target it. The service-worker release cache is `billspliter-v2-2-0`; activation removes only old BillSpliter caches. `tests/release.cjs` verifies exact-case cache assets and preserves unrelated caches. The persistence schema and legacy HTML file remain unchanged.
 
 No browser surface was available. jsdom verifies behavior and DOM state, not actual layout: mobile 360–390px/desktop screenshots, real Bootstrap modal behavior, touch/focus experience, CDN/network loading, offline/service worker behavior, receipt image export and file import/export still need browser checks before release. Bootstrap is stubbed in smoke tests; the production CDN Vue version is floating while tests pin the installed version.
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="th" data-bs-theme="light">
 <head>
-    <!-- Version: v2.1.0 | Status: Primary app build | Change: Manager hierarchy, shared calculator and draft integrity fixes -->
+    <!-- Version: v2.2.0 | Status: Primary app build | Change: Copy summary image to clipboard with JPG/PNG downloads -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BillSpliter (Badtz.mos) v2.1.0</title>
+    <title>BillSpliter (Badtz.mos) v2.2.0</title>
     <meta name="theme-color" content="#5C6BC0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1639,6 +1639,8 @@
             justify-content: flex-end;
         }
         .summary-toolbar .btn-group { flex: 0 0 auto; }
+        .summary-image-control { display: flex; flex-wrap: wrap; gap: 8px; }
+        .summary-image-note { flex-basis: 100%; font-size: 0.78rem; color: #f3f4f6; }
 
         @media (max-width: 991.98px) {
             html,
@@ -2503,9 +2505,15 @@
                             <button class="btn btn-outline-light btn-sm" style="min-width: 60px;" @click="zoomLevel = 1">{{ Math.round(zoomLevel * 100) }}%</button>
                             <button class="btn btn-outline-light btn-sm" @click="zoom(0.1)"><i class="fa-solid fa-plus"></i></button>
                         </div>
+                        <div class="summary-image-control">
+                            <button v-if="supportsReceiptCopy()" id="btnCopyReceipt" type="button" class="btn btn-primary btn-sm fw-bold" :disabled="receiptImageState !== 'ready' || isCopyingReceipt || !summaryIsOpen" @click="copyReceipt">
+                                <i class="fa-regular fa-copy me-1"></i>{{ receiptImageState === 'preparing' ? 'กำลังเตรียมรูป…' : isCopyingReceipt ? 'กำลังคัดลอก…' : 'คัดลอกรูป' }}
+                            </button>
+                            <button v-if="receiptImageState === 'error'" type="button" class="btn btn-outline-light btn-sm" @click="refreshReceiptImage">ลองเตรียมรูปใหม่</button>
+                        </div>
                         <div class="btn-group" role="group">
-                            <button id="btnExport" type="button" class="btn btn-success btn-sm fw-bold dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fa-solid fa-download me-1"></i> บันทึกภาพ
+                            <button id="btnExport" type="button" class="btn btn-success btn-sm fw-bold dropdown-toggle" :disabled="isSavingReceipt" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-download me-1"></i>{{ isSavingReceipt ? 'กำลังสร้างภาพ…' : 'บันทึกภาพ' }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
                                 <li><a class="dropdown-item fw-bold text-success py-2" href="#" @click.prevent="captureReceipt('jpg')"><i class="fa-solid fa-file-image me-2"></i>Export เป็น .JPG</a></li>
@@ -2513,6 +2521,7 @@
                                 <li><a class="dropdown-item fw-bold text-primary py-2" href="#" @click.prevent="captureReceipt('png')"><i class="fa-solid fa-file-image me-2"></i>Export เป็น .PNG</a></li>
                             </ul>
                         </div>
+                        <div v-if="receiptFeedback" class="summary-image-note" role="status" aria-live="polite">{{ receiptFeedback }}</div>
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -2706,7 +2715,11 @@
                 splitMode: 'equal', customInputMode: 'amount', customAmounts: {}, customPercents: {},
                 customAmountInputs: {}, customPercentInputs: {},
                 calculatorTarget: null, calculatorExpression: '',
-                appVersion: 'v2.1.0', appStatus: 'manager-calculator-release',
+                summaryIsOpen: false, receiptImageState: 'idle', receiptImageBlob: null,
+                isCopyingReceipt: false, receiptCopyMessage: '',
+                receiptImageSignature: '', receiptImageGeneration: 0,
+                receiptPreparationMessage: '', receiptExportMessage: '', isSavingReceipt: false,
+                appVersion: 'v2.2.0', appStatus: 'summary-image-copy-release',
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
                 editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {},
@@ -2719,11 +2732,24 @@
             this.loadBackups();
             this.loadCurrentSession();
             window.addEventListener('resize', this.handleWindowResize);
+            const summaryModal = document.getElementById('summaryModal');
+            summaryModal.addEventListener('shown.bs.modal', this.handleSummaryShown);
+            summaryModal.addEventListener('hide.bs.modal', this.handleSummaryHidden);
         },
         beforeUnmount() {
             window.removeEventListener('resize', this.handleWindowResize);
+            const summaryModal = document.getElementById('summaryModal');
+            summaryModal?.removeEventListener('shown.bs.modal', this.handleSummaryShown);
+            summaryModal?.removeEventListener('hide.bs.modal', this.handleSummaryHidden);
+            this.handleSummaryHidden();
         },
         computed: {
+            receiptDataSignature() { return JSON.stringify(this.getCleanData()); },
+            receiptFeedback() {
+                if (this.receiptCopyMessage || this.receiptPreparationMessage || this.receiptExportMessage) return this.receiptCopyMessage || this.receiptPreparationMessage || this.receiptExportMessage;
+                if (this.receiptImageState === 'ready' && this.supportsReceiptCopy()) return 'สำหรับ LINE บนคอม: กด “คัดลอกรูป” แล้วเปิดแชต LINE และกดวาง';
+                return this.receiptImageState === 'unsupported' ? 'เบราว์เซอร์นี้คัดลอกรูปไม่ได้ ใช้ “บันทึกภาพ” แทนได้' : '';
+            },
             sumCustomAmount() { return Object.values(this.customAmounts).reduce((a, b) => a + (parseFloat(b) || 0), 0); },
             sumCustomPercent() { return Object.values(this.customPercents).reduce((a, b) => a + (parseFloat(b) || 0), 0); },
             customRemainingAmount() { return Math.max((parseFloat(this.form.price) || 0) - this.sumCustomAmount, 0); },
@@ -2814,6 +2840,7 @@
             }
         },
         watch: {
+            receiptDataSignature() { this.refreshReceiptImage(); },
             'form.price'() {
                 if (this.splitMode !== 'custom') return;
                 if (this.customInputMode === 'percent') this.syncCustomAmountsFromPercents();
@@ -3313,7 +3340,28 @@
                 this.expenses.splice(toIndex, 0, movingItem);
                 this.saveData();
             },
-            openSummary() { const m = new bootstrap.Modal(document.getElementById('summaryModal')); m.show(); setTimeout(() => this.autoFit(), 500); },
+            openSummary() {
+                this.receiptExportMessage = '';
+                this.receiptPreparationMessage = '';
+                this.receiptCopyMessage = '';
+                this.receiptImageState = this.supportsReceiptCopy() ? 'preparing' : 'unsupported';
+                const el = document.getElementById('summaryModal');
+                if (el.classList.contains('show')) { this.handleSummaryShown(); return; }
+                const modal = bootstrap.Modal.getOrCreateInstance ? bootstrap.Modal.getOrCreateInstance(el) : new bootstrap.Modal(el);
+                modal.show();
+            },
+            handleSummaryShown() {
+                this.summaryIsOpen = true;
+                this.autoFit();
+                this.refreshReceiptImage();
+            },
+            handleSummaryHidden() {
+                this.summaryIsOpen = false;
+                this.receiptImageGeneration++;
+                this.receiptImageBlob = null;
+                this.receiptImageSignature = '';
+                this.receiptImageState = 'idle';
+            },
             handleWindowResize() {
                 const summaryModal = document.getElementById('summaryModal');
                 if(summaryModal && summaryModal.classList.contains('show')) this.autoFit();
@@ -3367,7 +3415,117 @@
                     }
                 }
             },
-            captureReceipt(format) { const oz = this.zoomLevel; this.zoomLevel = 1; this.$nextTick(() => { const el = document.getElementById('captureArea'); html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#f3f4f6' }).then(canvas => { const link = document.createElement('a'); link.download = `Bill_${new Date().getTime()}.${format}`; link.href = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.9); link.click(); this.zoomLevel = oz; }); }); }
+            supportsReceiptCopy() {
+                return window.isSecureContext === true && typeof navigator.clipboard?.write === 'function' &&
+                    typeof ClipboardItem === 'function' &&
+                    (typeof ClipboardItem.supports !== 'function' || ClipboardItem.supports('image/png'));
+            },
+            refreshReceiptImage() {
+                this.receiptImageGeneration++;
+                this.receiptImageBlob = null;
+                this.receiptImageSignature = '';
+                this.receiptPreparationMessage = '';
+                this.receiptCopyMessage = '';
+                if (!this.summaryIsOpen) { this.receiptImageState = 'idle'; return; }
+                if (!this.supportsReceiptCopy()) { this.receiptImageState = 'unsupported'; return; }
+                this.prepareReceiptImage();
+            },
+            async prepareReceiptImage() {
+                const generation = this.receiptImageGeneration;
+                const signature = this.receiptDataSignature;
+                this.receiptImageState = 'preparing';
+                try {
+                    const blob = await this.renderReceiptBlob('png');
+                    if (generation !== this.receiptImageGeneration || !this.summaryIsOpen || signature !== this.receiptDataSignature) return;
+                    this.receiptImageBlob = blob;
+                    this.receiptImageSignature = signature;
+                    this.receiptImageState = 'ready';
+                } catch (error) {
+                    if (generation !== this.receiptImageGeneration || !this.summaryIsOpen) return;
+                    this.receiptImageState = 'error';
+                    this.receiptPreparationMessage = 'เตรียมรูปไม่สำเร็จ ลองเตรียมรูปใหม่ หรือใช้ “บันทึกภาพ”';
+                }
+            },
+            copyReceipt() {
+                if (this.isCopyingReceipt || !this.summaryIsOpen || !this.supportsReceiptCopy()) return;
+                if (this.receiptImageState !== 'ready' || !this.receiptImageBlob || this.receiptImageSignature !== this.receiptDataSignature) {
+                    if (this.receiptImageState !== 'preparing') this.refreshReceiptImage();
+                    return;
+                }
+                this.receiptCopyMessage = '';
+                this.receiptPreparationMessage = '';
+                this.receiptExportMessage = '';
+                const signature = this.receiptImageSignature;
+                this.isCopyingReceipt = true;
+                try {
+                    const item = new ClipboardItem({ 'image/png': this.receiptImageBlob });
+                    // Keep clipboard permission tied to this click, using the prepared image.
+                    const operation = navigator.clipboard.write([item]);
+                    Promise.resolve(operation).then(() => {
+                        if (this.summaryIsOpen && signature === this.receiptDataSignature) this.receiptCopyMessage = 'คัดลอกรูปแล้ว เปิดแชต LINE แล้วกดวางรูปได้เลย';
+                    }).catch(() => {
+                        if (this.summaryIsOpen) this.receiptCopyMessage = 'คัดลอกรูปไม่ได้ โปรดอนุญาตคลิปบอร์ดแล้วลองอีกครั้ง หรือใช้ “บันทึกภาพ”';
+                    }).finally(() => { this.isCopyingReceipt = false; });
+                } catch (error) {
+                    this.isCopyingReceipt = false;
+                    this.receiptCopyMessage = 'คัดลอกรูปไม่ได้ โปรดอนุญาตคลิปบอร์ดแล้วลองอีกครั้ง หรือใช้ “บันทึกภาพ”';
+                }
+            },
+            async renderReceiptBlob(format) {
+                await this.$nextTick();
+                const el = document.getElementById('captureArea');
+                if (!el) throw new Error('Receipt is unavailable');
+                if (document.fonts?.ready) await document.fonts.ready;
+                await Promise.all([...el.querySelectorAll('img')].filter(img => img.getAttribute('src')).map(img => {
+                    if (typeof img.decode === 'function') return img.decode();
+                    if (img.complete) return img.naturalWidth > 0 ? Promise.resolve() : Promise.reject(new Error('Receipt image failed to load'));
+                    return new Promise((resolve, reject) => {
+                        const finish = error => {
+                            clearTimeout(timeout);
+                            img.removeEventListener('load', loaded);
+                            img.removeEventListener('error', failed);
+                            error ? reject(error) : resolve();
+                        };
+                        const loaded = () => finish();
+                        const failed = () => finish(new Error('Receipt image failed to load'));
+                        const timeout = setTimeout(failed, 10000);
+                        img.addEventListener('load', loaded, { once: true });
+                        img.addEventListener('error', failed, { once: true });
+                    });
+                }));
+                const canvas = await html2canvas(el, {
+                    scale: 2, useCORS: true, backgroundColor: '#f3f4f6',
+                    onclone: clonedDocument => {
+                        const receipt = clonedDocument.getElementById('captureArea');
+                        receipt.style.transform = 'none';
+                        receipt.style.WebkitTransform = 'none';
+                        receipt.style.marginBottom = '0';
+                        receipt.parentElement.style.left = '0';
+                    }
+                });
+                return new Promise((resolve, reject) => {
+                    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Receipt image could not be created')),
+                        format === 'jpg' ? 'image/jpeg' : 'image/png', 0.9);
+                });
+            },
+            async captureReceipt(format) {
+                if (this.isSavingReceipt) return;
+                this.isSavingReceipt = true;
+                this.receiptExportMessage = '';
+                try {
+                    const blob = await this.renderReceiptBlob(format);
+                    const url = URL.createObjectURL(blob);
+                    try {
+                        const link = document.createElement('a');
+                        link.download = `Bill_${Date.now()}.${format}`;
+                        link.href = url;
+                        document.body.appendChild(link);
+                        try { link.click(); } finally { link.remove(); }
+                    } finally { setTimeout(() => URL.revokeObjectURL(url), 1000); }
+                } catch (error) {
+                    this.receiptExportMessage = 'สร้างภาพไม่สำเร็จ ลองบันทึกภาพอีกครั้ง';
+                } finally { this.isSavingReceipt = false; }
+            }
         }
     }).mount('#app');
 
