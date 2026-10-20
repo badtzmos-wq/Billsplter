@@ -1,7 +1,7 @@
 param(
     [int]$Port = 8080,
-    [string]$AppFolder = "BillSpliter_V2.0.1",
-    [string]$EntryFile = "BillSpliter_V2.0.1.html",
+    [string]$AppFolder = ".",
+    [string]$EntryFile = "Billsplitter.html",
     [switch]$ShowOnly
 )
 

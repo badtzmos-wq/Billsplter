@@ -1,9 +1,9 @@
-const CACHE_NAME = 'billspliter-v2-0-1';
+const CACHE_NAME = 'billspliter-v2-1-0';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './BillSpliter_V2.0.1.html',
+  './Billsplitter.html',
   './manifest.webmanifest',
   './icons/icon.svg'
 ];
@@ -20,7 +20,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+        keys.filter(key => key.startsWith('billspliter-') && key !== CACHE_NAME).map(key => caches.delete(key))
       ))
       .then(() => self.clients.claim())
   );

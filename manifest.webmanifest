@@ -3,7 +3,7 @@
   "short_name": "BillSpliter",
   "description": "Split bills and summarize payments for trips and group meals.",
   "lang": "th",
-  "start_url": "./BillSpliter_V2.0.1.html",
+  "start_url": "./Billsplitter.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

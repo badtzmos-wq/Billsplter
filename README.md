@@ -2,7 +2,7 @@
 
 A lightweight, single-file bill splitting web app for group meals, trips, and shared expenses. BillSpliter helps users record members, shops, expenses, payment methods, and calculate who should pay or receive money after splitting the bill.
 
-> Current version: `v2.0.4`  
+> Current version: `v2.1.0`
 > Author label: `Badtz.mos`
 
 ---
@@ -11,7 +11,7 @@ A lightweight, single-file bill splitting web app for group meals, trips, and sh
 
 BillSpliter is designed for quick shared-expense tracking without a backend. The app runs directly in the browser and stores data locally using `localStorage`. It supports member management, shop-based expense grouping, equal/custom split modes, payment information, backup/restore, and image export for the final receipt summary.
 
-Version `v2.0.4` focuses on layout improvement only. The app shell was refactored so the left control panel and right saved-list panel can scroll independently while keeping the header visible. Business logic is not changed in this version.
+Version `v2.1.0` makes shop context compact and expense entry prominent, adds calculator results directly to item prices and per-person shares, and fixes edit, deletion, member-rename, and stale split-state bugs. The web and PWA entry points now open `Billsplitter.html` and use a new release cache.
 
 ---
 
