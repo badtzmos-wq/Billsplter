@@ -21,6 +21,11 @@ function mount(options = {}) {
   vc.on('warn', m => errors.push(String(m))); vc.on('error', m => errors.push(String(m)));
   const dom = new JSDOM(html, { url: 'https://billsplitter.test/', runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole: vc });
   const w = dom.window;
+  if (options.userAgent) Object.defineProperty(w.navigator, 'userAgent', { value: options.userAgent });
+  if (options.platform) Object.defineProperty(w.navigator, 'platform', { value: options.platform });
+  if (options.touchPoints) Object.defineProperty(w.navigator, 'maxTouchPoints', { value: options.touchPoints });
+  w.HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+  w.HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); this.dispatchEvent(new w.Event('close')); };
   Object.defineProperty(w, 'isSecureContext', { value: options.secure !== false, configurable: true });
   w.alert = () => {}; w.scrollTo = () => {};
   w.bootstrap = { Modal: class {
@@ -40,6 +45,7 @@ function mount(options = {}) {
       constructor(data) { this.data = data; }
       static supports(type) { return type === 'image/png' && options.copyPng !== false; }
     };
+    if (options.legacyClipboard) w.ClipboardItem.supports = undefined;
     Object.defineProperty(w.navigator, 'clipboard', { value: { write: items => {
       calls.copies.push(items);
       return options.copy ? options.copy(items) : Promise.resolve();
@@ -75,12 +81,122 @@ function mount(options = {}) {
   return { w, vm, calls, errors, canvas, settle, seed, hide, close: () => { calls.cleanups.forEach(fn => fn()); w.close(); } };
 }
 const scenarios = [
+  ...[
+    ['iPhone', { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile Safari/604.1', legacyClipboard: true }, 'ios', 'วาง'],
+    ['iPad desktop mode', { userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15', platform: 'MacIntel', touchPoints: 5 }, 'ios', 'วาง'],
+    ['Android', { userAgent: 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 SamsungBrowser/26.0 Chrome/122.0 Mobile Safari/537.36' }, 'android', 'แป้นพิมพ์']
+  ].map(([label, options, platform, instruction]) => [label + ' preview, clipboard gesture and bounded long receipt', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle();
+    equal(app.vm.receiptPlatform, platform);
+    equal(app.calls.renders.length, 0, 'Mobile summary does not start background rasterization');
+    ok(!app.w.document.getElementById('btnCopyReceipt'), 'Mobile uses open-image first');
+    await app.vm.openReceiptPreview();
+    ok(app.w.document.getElementById('receiptImagePreview').textContent.includes(instruction));
+    ok(!app.w.document.getElementById('btnCopyReceiptPreview'), 'Mobile uses native image long-press instead of ineffective API button');
+    equal(app.calls.copies.length, 0);
+    const url = app.vm.receiptPreviewUrl;
+    await app.vm.openReceiptPreview(); equal(app.vm.receiptPreviewUrl, url, 'Repeated open leaves displayed image alone');
+    equal(app.calls.renders.length, 1);
+    await app.settle(); app.vm.closeReceiptPreview();
+    await app.vm.openReceiptPreview(); equal(app.calls.renders.length, 1, 'Reopening reuses current PNG');
+    app.vm.zoomLevel = 0.5; app.vm.handleWindowResize(); equal(app.vm.zoomLevel, 0.5, 'Preview resize cannot move summary');
+    app.vm.closeReceiptPreview();
+    const area = app.w.document.getElementById('captureArea');
+    Object.defineProperty(area, 'scrollWidth', { value: 1800 });
+    Object.defineProperty(area, 'scrollHeight', { value: 18000 });
+    app.vm.zoomLevel = 0.25; await app.vm.renderReceiptBlob('png');
+    const scale = app.calls.renders.at(-1).config.scale;
+    ok(1800 * 18000 * scale * scale <= 3000000, 'Mobile image stays inside conservative canvas budget');
+    ok(18000 * scale <= 8192); equal(app.vm.zoomLevel, 0.25);
+    equal(app.calls.downloads.length, 0);
+  }, options]),
+  ['Older mobile browser opens preview without native dialog support', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle();
+    app.w.HTMLDialogElement.prototype.showModal = undefined;
+    app.w.HTMLDialogElement.prototype.close = undefined;
+    await app.vm.openReceiptPreview();
+    const dialog = app.w.document.getElementById('receiptImagePreview');
+    ok(dialog.hasAttribute('open')); ok(dialog.querySelector('img')); equal(app.vm.receiptPreviewMessage, '');
+    app.vm.closeReceiptPreview(); ok(!dialog.hasAttribute('open')); equal(app.vm.receiptPreviewUrl, '');
+  }, { clipboard: false }],
+  ['Desktop clipboard rejection keeps the native-copy image available', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle(); await app.vm.openReceiptPreview();
+    app.w.navigator.clipboard.write = () => Promise.reject(new app.w.DOMException('Denied', 'NotAllowedError'));
+    app.w.document.getElementById('btnCopyReceiptPreview').click(); await app.settle();
+    const dialog = app.w.document.getElementById('receiptImagePreview');
+    ok(dialog.open); ok(dialog.querySelector('img')); ok(dialog.textContent.includes('คัดลอกรูปไม่ได้'));
+    equal(app.calls.downloads.length, 0);
+    app.w.navigator.clipboard.write = () => Promise.resolve();
+    app.w.document.getElementById('btnCopyReceiptPreview').click(); await app.settle();
+    ok(dialog.textContent.includes('คัดลอกรูปแล้ว'));
+  }],
+  ['Mobile opens a stable loading frame, blocks duplicates and cancels pending work', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle();
+    const pending = deferred(); app.w.html2canvas = () => { app.calls.renders.push('pending'); return pending.promise; };
+    const operation = app.vm.openReceiptPreview();
+    const dialog = app.w.document.getElementById('receiptImagePreview');
+    ok(dialog.open, 'Dialog opens during click before rendering finishes');
+    await app.settle(); ok(dialog.querySelector('.receipt-preview-loading'));
+    await app.vm.openReceiptPreview(); equal(app.calls.renders.length, 1);
+    app.vm.closeReceiptPreview(); pending.resolve(app.canvas()); await operation;
+    ok(!dialog.open); equal(app.vm.receiptPreviewUrl, ''); equal(app.calls.urls.length, 0);
+    equal(app.vm.isPreparingReceiptPreview, false);
+  }, { userAgent: 'Android' }],
+  ['Closing and reopening during capture shares one job and ignores the old request', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle();
+    const pending = deferred(); app.w.html2canvas = () => { app.calls.renders.push('pending'); return pending.promise; };
+    const first = app.vm.openReceiptPreview(); await app.settle(); app.vm.closeReceiptPreview();
+    const second = app.vm.openReceiptPreview(); await app.settle();
+    equal(app.calls.renders.length, 1, 'Same bill has a single in-flight PNG capture');
+    pending.resolve(app.canvas()); await Promise.all([first, second]);
+    ok(app.w.document.getElementById('receiptImagePreview').open);
+    ok(app.vm.receiptPreviewUrl); equal(app.calls.urls.length, 1); equal(app.vm.isPreparingReceiptPreview, false);
+  }, { userAgent: 'Android' }],
+  ['Image preview allows native long-press copying without a download', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle();
+    const button = app.w.document.getElementById('btnOpenReceipt'); ok(button);
+    button.focus(); button.click(); await app.settle();
+    const dialog = app.w.document.getElementById('receiptImagePreview'); ok(dialog.open);
+    equal(dialog.querySelector('img').getAttribute('src'), app.vm.receiptPreviewUrl);
+    ok(dialog.textContent.includes('กดค้าง')); equal(app.calls.downloads.length, 0); equal(app.calls.copies.length, 0);
+    const url = app.vm.receiptPreviewUrl; app.vm.closeReceiptPreview(); await app.settle();
+    equal(app.vm.receiptPreviewUrl, ''); ok(!dialog.open); ok(app.calls.revoked.includes(url));
+    equal(app.w.document.activeElement, button);
+  }],
+  ['Preview works without Clipboard API and closes when data changes', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle();
+    await app.vm.openReceiptPreview(); ok(app.vm.receiptPreviewUrl); equal(app.calls.downloads.length, 0);
+    const url = app.vm.receiptPreviewUrl;
+    app.vm.expenses[0].price = 300; await app.settle();
+    equal(app.vm.receiptPreviewUrl, ''); ok(app.calls.revoked.includes(url));
+  }, { clipboard: false }],
   ['Insecure contexts keep manual image saving available', async app => {
     await app.seed(); app.vm.openSummary(); await app.settle();
     equal(app.vm.receiptImageState, 'unsupported'); equal(app.calls.renders.length, 0);
     ok(!app.w.document.getElementById('btnCopyReceipt'));
     await app.vm.captureReceipt('png'); equal(app.calls.downloads.length, 1);
   }, { secure: false }],
+  ['Pending preview rejects stale data and closed summaries, then retries failures', async app => {
+    await app.seed(); app.vm.openSummary(); await app.settle(); app.vm.zoomLevel = 0.6;
+    let pending = deferred();
+    app.w.html2canvas = () => pending.promise;
+    let operation = app.vm.openReceiptPreview(); await app.settle();
+    await app.vm.openReceiptPreview(); equal(app.vm.isPreparingReceiptPreview, true);
+    app.vm.expenses[0].price = 500; await app.settle();
+    pending.resolve(app.canvas()); await operation;
+    equal(app.vm.receiptPreviewUrl, ''); equal(app.calls.urls.length, 0);
+    pending = deferred(); operation = app.vm.openReceiptPreview(); await app.settle(); app.hide();
+    pending.resolve(app.canvas()); await operation; equal(app.vm.receiptPreviewUrl, '');
+    app.vm.openSummary(); await app.settle(); app.vm.zoomLevel = 0.6;
+    app.w.html2canvas = () => Promise.reject(new Error('Render failed'));
+    await app.vm.openReceiptPreview(); ok(app.vm.receiptFeedback.includes('เปิดรูปไม่สำเร็จ'));
+    equal(app.vm.isPreparingReceiptPreview, false); equal(app.vm.zoomLevel, 0.6);
+    app.w.html2canvas = () => Promise.resolve(app.canvas());
+    await app.vm.openReceiptPreview(); ok(app.vm.receiptPreviewUrl);
+    const url = app.vm.receiptPreviewUrl; app.hide();
+    equal(app.vm.receiptPreviewUrl, ''); ok(app.calls.revoked.includes(url));
+    equal(app.calls.downloads.length, 0);
+  }, { clipboard: false }],
   ['Copy the full PNG during the click without saving', async app => {
     await app.seed(); app.vm.openSummary(); await app.settle();
     equal(app.vm.receiptImageState, 'ready');
