@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="th" data-bs-theme="light">
 <head>
-    <!-- Version: v2.0.4 | Status: Primary app build | Change: V2.0.4 is the canonical app entry for web/PWA deploys -->
+    <!-- Version: v2.1.0 | Status: Primary app build | Change: Manager hierarchy, shared calculator and draft integrity fixes -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BillSpliter (Badtz.mos) v2.0.4</title>
+    <title>BillSpliter (Badtz.mos) v2.1.0</title>
     <meta name="theme-color" content="#5C6BC0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -227,12 +227,24 @@
 
         /* Shop card accent */
         .card-shop {
-            border-left: 3px solid var(--shop-border);
-            background: linear-gradient(135deg, #FFFDF9 0%, var(--surface) 100%);
+            background: var(--surface);
         }
 
         /* Add-item card accent */
-        .card-add { border-left: 3px solid var(--accent); }
+        .card-add { border-color: var(--accent); }
+        .manager-item-title { font-size: 1.1rem; font-weight: 700; color: var(--ink-1); margin-bottom: 16px; }
+        .manager-field-label { display: block; font-size: 0.75rem; color: var(--ink-2); margin-bottom: 6px; }
+        .manager-price-field { display: flex; gap: 8px; }
+        .manager-price-field input { min-width: 0; flex: 1; }
+        .manager-price-calc { flex-shrink: 0; min-width: 44px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); color: var(--accent); }
+        .manager-shop-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .card-shop .shop-active-context { border: 0; padding: 0; background: transparent; }
+        .card-shop .shop-workspace-head { margin-bottom: 8px; }
+        .card-shop .shop-view-panel { border: 0; padding: 12px 0 0; background: transparent; }
+        .card-shop .shop-picker-row { margin-top: 12px; }
+        .manager-shop-picker { border: 1px solid var(--border); }
+        .custom-calc-modal { max-height: calc(100dvh - 32px); overflow-y: auto; }
+        .custom-calc-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* ── Section Headers ── */
         .section-title {
@@ -1947,60 +1959,44 @@
                 <div class="app-card card-shop" v-show="leftPanelTab === 'manager'">
                     <div class="shop-workspace-head">
                         <div style="display:flex;align-items:center;gap:8px;min-width:0">
-                            <div style="width:20px;height:20px;border-radius:50%;background:var(--shop);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
                             <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--shop)">ร้าน / สถานที่</div>
                         </div>
-                        <button class="btn-shop-mgr" @click="shopPanelCollapsed = !shopPanelCollapsed">
+                        <button type="button" class="btn-shop-mgr" :aria-expanded="!shopPanelCollapsed" aria-controls="manager-shop-details" @click="if(shopPanelCollapsed) setShopUiMode('view'); shopPanelCollapsed = !shopPanelCollapsed">
                             <i class="fa-solid" :class="shopPanelCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size:0.7rem"></i>
-                            {{ shopPanelCollapsed ? 'Expand' : 'Collabs' }}
+                            {{ shopPanelCollapsed ? 'ดูสมาชิก' : 'ซ่อนรายละเอียด' }}
                         </button>
                     </div>
 
                     <div class="shop-active-context mb-2">
-                        <div class="shop-active-label">Current shop</div>
+                        <div class="shop-active-label">ร้านปัจจุบัน</div>
                         <div class="shop-active-name">
                             <i class="fa-solid fa-location-dot" style="color:var(--shop);font-size:0.82rem"></i>
                             <span>{{ currentShop || 'ยังไม่ได้เลือกร้าน' }}</span>
                         </div>
                         <div class="shop-active-meta">
-                            {{ currentShop ? ((shopMemberMap[currentShop] || activeShopMembers).length + ' คนที่ร่วมด้วย') : 'เลือกร้านจากรายการ หรือกด Add Shop เพื่อเพิ่มร้านใหม่' }}
+                            {{ currentShop ? ((shopMemberMap[currentShop] || activeShopMembers).length + ' คนที่ร่วมด้วย') : 'เลือกร้านหรือเพิ่มร้านใหม่เพื่อเริ่มบันทึกรายการ' }}
                         </div>
                     </div>
 
-                    <!-- Collapsed view: only current shop + collab members -->
-                    <div v-if="shopPanelCollapsed" class="shop-collapsed-view">
-                        <div class="shop-mini-label">สมาชิกที่ร่วมด้วย</div>
-                        <div class="d-flex flex-wrap" style="gap:4px">
-                            <div v-for="p in activeShopMembers" :key="'compact-' + p" class="member-chip active" style="cursor:default">{{ p }}</div>
-                            <div v-if="activeShopMembers.length === 0" style="font-size:0.78rem;color:var(--ink-3)">ยังไม่มีสมาชิกที่ร่วมด้วย</div>
-                        </div>
+                    <div class="manager-shop-actions">
+                        <button type="button" class="btn-shop-mgr" @click="shopPanelCollapsed = false; setShopUiMode('view')">เลือกร้าน / เปลี่ยนร้าน</button>
+                        <button type="button" class="btn-shop-mgr" @click="shopPanelCollapsed = false; setShopUiMode('add')"><i class="fa-solid fa-plus me-1"></i>เพิ่มร้าน</button>
+                        <button v-if="currentShop" type="button" class="btn-shop-mgr" @click="shopPanelCollapsed = false; setShopUiMode('editor')">จัดการ</button>
                     </div>
 
-                    <div v-else>
-                        <div class="shop-mode-toggle shop-inline-mode" role="group" aria-label="Shop workspace actions">
-                            <button type="button" :class="{ active: shopUiMode === 'add' }" @click="setShopUiMode(shopUiMode === 'add' ? 'view' : 'add')">
-                                <i class="fa-solid fa-plus me-1"></i>Add Shop
-                            </button>
-                            <button type="button" :class="{ active: shopUiMode === 'editor' }" @click="setShopUiMode(shopUiMode === 'editor' ? 'view' : 'editor')">
-                                <i class="fa-solid fa-pen-to-square me-1"></i>Shop Manager
-                            </button>
-                        </div>
+                    <div v-if="!shopPanelCollapsed" id="manager-shop-details">
 
                         <!-- Saved shops quick-select -->
                         <div v-if="savedShops.length > 0" class="shop-picker-row">
-                            <div v-for="s in savedShops" :key="s"
-                                @click="selectShopInline(s); if(shopUiMode === 'editor') tempEditShopName = s"
-                                class="shop-pill"
+                            <button type="button" v-for="s in savedShops" :key="s"
+                                @click="selectShopInline(s); if(shopUiMode === 'editor') tempEditShopName = s; else shopPanelCollapsed = true"
+                                class="shop-pill manager-shop-picker"
                                 :class="{ active: currentShop === s }">
                                 {{ s }}
-                            </div>
+                            </button>
                         </div>
 
                         <div v-if="shopUiMode === 'view'" class="shop-view-panel">
-                            <div class="shop-view-note mb-2">
-                                <i class="fa-solid fa-lock me-1"></i>
-                                View Mode ใช้สำหรับเลือก/ตรวจสอบร้านเท่านั้น จึงไม่มีกล่องแก้ไขเพื่อลดโอกาสแก้ผิดร้าน
-                            </div>
                             <div class="shop-mini-label">สมาชิกที่ร่วมด้วย</div>
                             <div class="d-flex flex-wrap" style="gap:4px">
                                 <div v-for="p in activeShopMembers" :key="'view-' + p" class="member-chip active" style="cursor:default">{{ p }}</div>
@@ -2079,15 +2075,22 @@
 
                 <!-- Add Item Card -->
                 <div class="app-card card-add" v-show="leftPanelTab === 'manager'">
-                    <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">
-                        <i class="fa-solid fa-plus me-1"></i>เพิ่มรายการ
-                    </div>
+                    <div class="manager-item-title">{{ editingIndex === null ? 'เพิ่มรายการ' : 'แก้ไขรายการ' }}</div>
                     <div class="row g-2">
-                        <div class="col-8"><input type="text" class="form-control" v-model="form.item" placeholder="รายการอาหาร"></div>
-                        <div class="col-4"><input type="number" class="form-control" v-model.number="form.price" placeholder="ราคา"></div>
                         <div class="col-12">
-                            <label style="font-size:0.75rem;color:var(--ink-3);margin-bottom:4px;display:block">คนจ่ายเงิน</label>
-                            <select class="form-select" v-model="form.payer">
+                            <label class="manager-field-label" for="expense-item">รายการ</label>
+                            <input id="expense-item" type="text" class="form-control" v-model="form.item" placeholder="เช่น อาหาร เครื่องดื่ม">
+                        </div>
+                        <div class="col-12">
+                            <label class="manager-field-label" for="expense-price">ราคา (บาท)</label>
+                            <div class="manager-price-field">
+                                <input id="expense-price" type="number" min="0" step="0.01" inputmode="decimal" class="form-control" v-model.number="form.price" placeholder="0.00">
+                                <button type="button" class="manager-price-calc" @click="openPriceCalculator" aria-label="คำนวณราคา" title="คำนวณราคา"><i class="fa-solid fa-calculator"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="manager-field-label" for="expense-payer">คนจ่ายเงิน</label>
+                            <select id="expense-payer" class="form-select" v-model="form.payer">
                                 <option value="" disabled>เลือกคนจ่าย</option>
                                 <option v-for="p in people" :value="p">{{ p }}</option>
                             </select>
@@ -2295,10 +2298,10 @@
 
     <!-- Custom Split Calculator Popup -->
     <div v-if="calculatorTarget" class="custom-calc-modal-backdrop" @click.self="closeCustomCalculator">
-        <div class="custom-calc-modal" role="dialog" aria-modal="true">
+        <div class="custom-calc-modal" role="dialog" aria-modal="true" aria-labelledby="calculator-title" @keydown="handleCalculatorKeydown">
             <div class="custom-calc-head">
                 <div>
-                    <div class="custom-calc-title">เครื่องคิดเลข — {{ calculatorTarget }}</div>
+                    <div id="calculator-title" class="custom-calc-title">เครื่องคิดเลข — {{ calculatorLabel }}</div>
                     <div class="custom-calc-sub">กรอกสูตรได้ เช่น 120.50+35 หรือใช้ปุ่มด้านล่าง</div>
                 </div>
                 <button type="button" class="custom-calc-close-btn" @click="closeCustomCalculator" aria-label="ปิดเครื่องคิดเลข"><i class="fa-solid fa-xmark"></i><span>ปิด</span></button>
@@ -2306,15 +2309,15 @@
             <div class="custom-calc-modal-summary">
                 <div>
                     โหมด
-                    <strong>{{ customInputMode === 'amount' ? 'บาท' : '%' }}</strong>
+                    <strong>{{ calculatorUnit === '฿' ? 'บาท' : '%' }}</strong>
                 </div>
-                <div>
+                <div v-if="calculatorTarget.type === 'member'">
                     ใส่ได้สูงสุด
-                    <strong>{{ formatNumber(calculatorCurrentLimit) }} {{ customInputMode === 'amount' ? '฿' : '%' }}</strong>
+                    <strong>{{ formatNumber(calculatorCurrentLimit) }} {{ calculatorUnit }}</strong>
                 </div>
             </div>
-            <input class="custom-calc-display" v-model="calculatorExpression" inputmode="decimal" autocomplete="off" placeholder="เช่น 120.50+35" @keyup.enter="applyCalcToMember(calculatorTarget)">
-            <div class="custom-calc-result">
+            <input ref="calculatorDisplay" class="custom-calc-display" v-model="calculatorExpression" aria-label="สูตรคำนวณ" inputmode="decimal" autocomplete="off" placeholder="เช่น 120.50+35" @keydown.enter.prevent="applyCalculator">
+            <div class="custom-calc-result" aria-live="polite">
                 <span>ผลลัพธ์</span>
                 <strong>{{ calculatorPreviewText }}</strong>
             </div>
@@ -2338,7 +2341,7 @@
             </div>
             <div class="custom-calc-actions">
                 <button type="button" class="btn btn-secondary" @click="clearCalc">ล้าง</button>
-                <button type="button" class="btn btn-primary" @click="applyCalcToMember(calculatorTarget)">ใช้ค่านี้</button>
+                <button type="button" class="btn btn-primary" :disabled="!calculatorCanApply" @click="applyCalculator">นำไปใช้</button>
             </div>
         </div>
     </div>
@@ -2702,13 +2705,13 @@
                 form: { id: null, item: '', price: null, payer: '', consumers: [] },
                 splitMode: 'equal', customInputMode: 'amount', customAmounts: {}, customPercents: {},
                 customAmountInputs: {}, customPercentInputs: {},
-                calculatorTarget: '', calculatorExpression: '',
-                appVersion: 'v2.0.4', appStatus: 'vue-cloak-template-guard',
+                calculatorTarget: null, calculatorExpression: '',
+                appVersion: 'v2.1.0', appStatus: 'manager-calculator-release',
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
                 editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {},
                 shopManagerMode: 'view', selectedShopForManager: '', expandedShopPanels: {},
-                shopUiMode: 'view', shopPanelCollapsed: false,
+                shopUiMode: 'view', shopPanelCollapsed: true,
                 newShopName: '', newShopDefaultPayer: '', newShopMembers: [], tempEditShopName: ''
             }
         },
@@ -2737,21 +2740,30 @@
                 return 'bg-warning text-dark';
             },
 
+            calculatorLabel() { return this.calculatorTarget?.type === 'price' ? 'ราคา (บาท)' : this.calculatorTarget?.member || ''; },
+            calculatorUnit() { return this.calculatorTarget?.type === 'price' || this.customInputMode === 'amount' ? '฿' : '%'; },
+            calculatorCanApply() {
+                const result = this.evaluateCalcExpression(this.calculatorExpression);
+                return Number.isFinite(result) && result >= 0 &&
+                    Number.isFinite(this.roundSplitValue(Math.min(result, this.calculatorCurrentLimit)));
+            },
             calculatorCurrentLimit() {
                 if (!this.calculatorTarget) return 0;
-                return this.customInputMode === 'amount' ? this.getCustomAmountLimit(this.calculatorTarget) : this.getCustomPercentLimit(this.calculatorTarget);
+                if (this.calculatorTarget.type === 'price') return Infinity;
+                const p = this.calculatorTarget.member;
+                return this.customInputMode === 'amount' ? this.getCustomAmountLimit(p) : this.getCustomPercentLimit(p);
             },
             calculatorPreviewText() {
                 if (!this.calculatorExpression) return '-';
                 const result = this.evaluateCalcExpression(this.calculatorExpression);
-                if (!Number.isFinite(result) || result < 0) return 'สูตรไม่ถูกต้อง';
+                if (!this.calculatorCanApply) return 'สูตรไม่ถูกต้อง';
                 const limited = Math.min(result, this.calculatorCurrentLimit);
-                const unit = this.customInputMode === 'amount' ? ' ฿' : '%';
+                const unit = ' ' + this.calculatorUnit;
                 const suffix = result > this.calculatorCurrentLimit ? ' (เกิน limit)' : '';
                 return `${this.formatNumber(this.roundSplitValue(limited))}${unit}${suffix}`;
             },
             isFormValid() {
-                if(!this.form.item || !this.form.price || this.form.price <= 0 || !this.form.payer) return false;
+                if(!this.form.item || !Number.isFinite(Number(this.form.price)) || !this.form.price || this.form.price <= 0 || !this.form.payer) return false;
                 if(this.splitMode === 'equal') return this.form.consumers.length > 0;
                 return Math.abs(this.sumCustomAmount - this.form.price) < 0.011;
             },
@@ -2862,7 +2874,11 @@
                 reader.readAsText(file);
             },
 
-            addPerson() { if(this.newPerson) { this.people.push(this.newPerson); this.newPerson = ''; this.showMemberInput = true; this.saveData(); } },
+            addPerson() {
+                const name = (this.newPerson || '').trim();
+                if (!name || this.people.includes(name)) return;
+                this.people.push(name); this.newPerson = ''; this.showMemberInput = true; this.saveData();
+            },
             removePerson(idx) {
                 if(confirm('ลบสมาชิก?')) {
                     const removed = this.people.splice(idx, 1)[0];
@@ -2882,7 +2898,7 @@
                     this.saveData();
                 }
             },
-            removeExpense(id) { if(confirm('ลบรายการนี้?')) { this.expenses = this.expenses.filter(ex => ex.id !== id); this.saveData(); this.showToast(); } },
+            removeExpense(id) { if(confirm('ลบรายการนี้?')) { this.expenses = this.expenses.filter(ex => ex.id !== id); if (this.form.id === id) this.resetForm(); this.saveData(); this.showToast(); } },
             cancelEdit() { this.resetForm(); },
             setShopManagerMode(mode) { this.shopManagerMode = mode; if(mode !== 'editor') this.editingShopIdx = -1; },
             setShopUiMode(mode) {
@@ -2964,7 +2980,8 @@
                     const next = this.savedShops[0] || '';
                     this.currentShop = next;
                     if (next) this.selectShopInline(next);
-                    else { this.activeShopMembers = []; this.form.consumers = []; this.form.payer = ''; }
+                    else this.selectShopInline('');
+                    if (!next || (this.form.id && !this.expenses.some(ex => ex.id === this.form.id))) this.resetForm();
                     this.shopUiMode = 'view';
                     this.saveData();
                     this.showToast();
@@ -3013,18 +3030,45 @@
                     delete this.shopMemberMap[s]; delete this.shopDefaults[s]; delete this.expandedShopPanels[s];
                     if(this.currentShop === s) this.currentShop = this.savedShops[0] || '';
                     this.selectShopInline(this.currentShop);
+                    if (!this.currentShop || (this.form.id && !this.expenses.some(ex => ex.id === this.form.id))) this.resetForm();
                     this.saveData(); this.showToast();
                 }
             },
-            selectShopInline(n) { if(!n) return; this.currentShop = n; this.selectedShopForManager = n; this.tempEditShopName = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); },
+            selectShopInline(n) { if(!n) { this.currentShop = ''; this.selectedShopForManager = ''; this.tempEditShopName = ''; this.activeShopMembers = []; this.form.consumers = []; this.form.payer = ''; this.pruneCustomSplitInputs(); return; } this.currentShop = n; this.selectedShopForManager = n; this.tempEditShopName = n; this.activeShopMembers = this.shopMemberMap[n] ? [...this.shopMemberMap[n]] : [...this.people]; this.form.consumers = [...this.activeShopMembers]; this.pruneCustomSplitInputs(); this.updateFormPayer(); },
             selectShopFromManager(n) { this.selectShopInline(n); this.expandedShopPanels[n] = true; bootstrap.Modal.getInstance(document.getElementById('shopManagerModal')).hide(); },
-            editExpense(ex) { this.leftPanelTab = 'manager'; this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+            editExpense(ex) { this.leftPanelTab = 'manager'; this.currentShop = ex.shop; this.activeShopMembers = this.shopMemberMap[ex.shop] ? [...this.shopMemberMap[ex.shop]] : [...this.people]; this.form = {...ex, consumers: [...ex.consumers]}; this.splitMode = ex.customSplit ? 'custom' : 'equal'; this.customInputMode = 'amount'; this.customAmounts = {...(ex.customAmounts || {})}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.syncCustomPercentsFromAmounts(); this.editingIndex = ex.id; window.scrollTo({ top: 0, behavior: 'smooth' }); },
             onShopInputChange(n) { if (this.shopMemberMap[n]) { this.activeShopMembers = [...this.shopMemberMap[n]]; this.form.consumers = [...this.activeShopMembers]; this.updateFormPayer(); } },
             manualAddShop() { const shopName = this.currentShop.trim(); if(shopName) { this.currentShop = shopName; if(!this.savedShops.includes(shopName)) this.savedShops.push(shopName); this.shopMemberMap[shopName] = [...this.activeShopMembers]; this.expandedShopPanels[shopName] = true; this.saveData(); this.showToast(); } },
             toggleActiveMembers(all) { this.activeShopMembers = all ? [...this.people] : []; this.pruneCustomSplitInputs(); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
             toggleActiveMember(p) { const idx = this.activeShopMembers.indexOf(p); if(idx > -1) { this.activeShopMembers.splice(idx, 1); delete this.customAmounts[p]; delete this.customPercents[p]; delete this.customAmountInputs[p]; delete this.customPercentInputs[p]; } else this.activeShopMembers.push(p); if (this.currentShop) this.shopMemberMap[this.currentShop] = [...this.activeShopMembers]; this.form.consumers = [...this.activeShopMembers]; this.saveData(); },
             startEditMember(i) { this.editingMemberIdx = i; this.tempMemberName = this.people[i]; },
-            saveEditMember(i) { if(this.tempMemberName) { this.people[i] = this.tempMemberName; this.editingMemberIdx = -1; this.saveData(); } },
+            saveEditMember(i) {
+                const oldName = this.people[i];
+                const name = (this.tempMemberName || '').trim();
+                if (!oldName || !name || (name !== oldName && this.people.includes(name))) return;
+                const renameList = values => values.map(p => p === oldName ? name : p);
+                const renameKey = values => {
+                    if (name !== oldName && Object.prototype.hasOwnProperty.call(values, oldName)) {
+                        values[name] = values[oldName]; delete values[oldName];
+                    }
+                };
+                this.people[i] = name;
+                this.activeShopMembers = renameList(this.activeShopMembers);
+                this.newShopMembers = renameList(this.newShopMembers);
+                this.form.consumers = renameList(this.form.consumers);
+                if (this.form.payer === oldName) this.form.payer = name;
+                if (this.newShopDefaultPayer === oldName) this.newShopDefaultPayer = name;
+                Object.keys(this.shopMemberMap).forEach(shop => { this.shopMemberMap[shop] = renameList(this.shopMemberMap[shop]); });
+                Object.keys(this.shopDefaults).forEach(shop => { if (this.shopDefaults[shop] === oldName) this.shopDefaults[shop] = name; });
+                this.expenses.forEach(ex => {
+                    if (ex.payer === oldName) ex.payer = name;
+                    ex.consumers = renameList(ex.consumers);
+                    if (ex.customAmounts) renameKey(ex.customAmounts);
+                });
+                [this.customAmounts, this.customPercents, this.customAmountInputs, this.customPercentInputs].forEach(renameKey);
+                if (this.calculatorTarget?.type === 'member' && this.calculatorTarget.member === oldName) this.calculatorTarget.member = name;
+                this.editingMemberIdx = -1; this.saveData();
+            },
             saveExpense() { const d = { id: this.form.id || Date.now(), shop: this.currentShop, item: this.form.item, price: this.form.price, payer: this.form.payer, consumers: [...this.form.consumers], customSplit: this.splitMode === 'custom', customAmounts: this.getCustomAmountsForSave() }; if(this.form.id) { const idx = this.expenses.findIndex(e => e.id === this.form.id); this.expenses[idx] = d; } else this.expenses.push(d); this.resetForm(); this.saveData(); this.showToast(); },
             resetForm() { this.form = { id: null, item: '', price: null, payer: '', consumers: [...this.activeShopMembers] }; this.customAmounts = {}; this.customPercents = {}; this.customAmountInputs = {}; this.customPercentInputs = {}; this.customInputMode = 'amount'; this.editingIndex = null; this.updateFormPayer(); },
             toggleConsumers(all) { this.form.consumers = all ? [...this.activeShopMembers] : []; },
@@ -3123,12 +3167,39 @@
                     this.customPercentInputs[p] = this.formatInputDecimal(this.customPercents[p]);
                 }
             },
-            openCustomCalculator(p) {
-                this.calculatorTarget = p;
-                const value = this.customInputMode === 'amount' ? this.customAmounts[p] : this.customPercents[p];
-                this.calculatorExpression = this.toSplitNumber(value) > 0 ? this.formatInputDecimal(value) : '';
+            openPriceCalculator() {
+                this.openCalculator({ type: 'price' }, this.form.price);
             },
-            closeCustomCalculator() { this.calculatorTarget = ''; this.calculatorExpression = ''; },
+            openCalculator(target, value) {
+                this._calculatorReturnFocus = document.activeElement;
+                this.calculatorTarget = target;
+                this.calculatorExpression = this.toSplitNumber(value) > 0 ? this.formatInputDecimal(value) : '';
+                this.$nextTick(() => this.$refs.calculatorDisplay?.focus());
+            },
+            openCustomCalculator(p) {
+                const value = this.customInputMode === 'amount' ? this.customAmounts[p] : this.customPercents[p];
+                this.openCalculator({ type: 'member', member: p }, value);
+            },
+            closeCustomCalculator() {
+                this.calculatorTarget = null;
+                this.calculatorExpression = '';
+                this.$nextTick(() => { if (this._calculatorReturnFocus?.isConnected) this._calculatorReturnFocus.focus(); });
+            },
+            handleCalculatorKeydown(event) {
+                if (event.key === 'Escape') { event.preventDefault(); this.closeCustomCalculator(); }
+                if (event.key !== 'Tab') return;
+                const controls = [...event.currentTarget.querySelectorAll('button:not(:disabled), input')];
+                const first = controls[0], last = controls[controls.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            },
+            applyCalculator() {
+                if (!this.calculatorTarget || !this.calculatorCanApply) return;
+                if (this.calculatorTarget.type === 'price') {
+                    this.form.price = this.roundSplitValue(this.evaluateCalcExpression(this.calculatorExpression));
+                    this.closeCustomCalculator();
+                } else this.applyCalcToMember(this.calculatorTarget.member);
+            },
             appendCalc(token) { this.calculatorExpression = `${this.calculatorExpression || ''}${token}`; },
             backspaceCalc() { this.calculatorExpression = (this.calculatorExpression || '').slice(0, -1); },
             clearCalc() { this.calculatorExpression = ''; },
@@ -3189,8 +3260,9 @@
             },
             pruneCustomSplitInputs() {
                 const allowed = new Set(this.activeShopMembers);
-                Object.keys(this.customAmounts).forEach(p => { if (!allowed.has(p)) delete this.customAmounts[p]; });
-                Object.keys(this.customPercents).forEach(p => { if (!allowed.has(p)) delete this.customPercents[p]; });
+                [this.customAmounts, this.customPercents, this.customAmountInputs, this.customPercentInputs].forEach(values => {
+                    Object.keys(values).forEach(p => { if (!allowed.has(p)) delete values[p]; });
+                });
             },
             getCustomAmountsForSave() {
                 if (this.splitMode !== 'custom') return {...this.customAmounts};
