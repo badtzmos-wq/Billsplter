@@ -2,7 +2,7 @@
 
 A lightweight, single-file bill splitting web app for group meals, trips, and shared expenses. BillSpliter helps users record members, shops, expenses, payment methods, and calculate who should pay or receive money after splitting the bill.
 
-> Current version: `v2.2.0`
+> Current version: `v2.2.1`
 > Author label: `Badtz.mos`
 
 ---
@@ -11,7 +11,7 @@ A lightweight, single-file bill splitting web app for group meals, trips, and sh
 
 BillSpliter is designed for quick shared-expense tracking without a backend. The app runs directly in the browser and stores data locally using `localStorage`. It supports member management, shop-based expense grouping, equal/custom split modes, payment information, backup/restore, and image export for the final receipt summary.
 
-Version `v2.2.0` adds copying the full summary image to the clipboard for pasting into LINE or other apps. JPG/PNG downloads remain available. Image preparation keeps the current zoom unchanged and refreshes when bill data changes. The release uses a new PWA cache.
+Version `v2.2.1` adds a stable open-image-first flow on Android and iOS with native long-press copying, on-demand image preparation, shared capture jobs and a clearer mobile summary toolbar. Desktop clipboard copying and JPG/PNG downloads remain available. The release uses a new PWA cache.
 
 ---
 
@@ -76,6 +76,7 @@ Version `v2.2.0` adds copying the full summary image to the clipboard for pastin
 ### Receipt Export
 
 - On desktop browsers that support image clipboard access, use **คัดลอกรูป** and paste into a LINE chat (Ctrl+V on Windows) without saving a file first.
+- On Android or iPhone/iPad, choose **เปิดรูปเพื่อคัดลอก**, then long-press the PNG and choose Copy Image. Mobile uses this open-first flow instead of the API copy buttons. If LINE cannot paste it, save the image and attach it from LINE. Availability of native menus and image paste depends on the browser and destination app; real-device verification is tracked in `tests/COPY_RECEIPT_QA.md`.
 - The image is prepared when the summary opens and refreshed when bill data changes. Unsupported browsers can still use the save options below.
 - Export the summary receipt as `.JPG`.
 - Export the summary receipt as `.PNG`.

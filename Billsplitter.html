@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="th" data-bs-theme="light">
 <head>
-    <!-- Version: v2.2.0 | Status: Primary app build | Change: Copy summary image to clipboard with JPG/PNG downloads -->
+    <!-- Version: v2.2.1 | Status: Primary app build | Change: Stable mobile image preview and native long-press copying -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BillSpliter (Badtz.mos) v2.2.0</title>
+    <title>BillSpliter (Badtz.mos) v2.2.1</title>
     <meta name="theme-color" content="#5C6BC0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1640,7 +1640,41 @@
         }
         .summary-toolbar .btn-group { flex: 0 0 auto; }
         .summary-image-control { display: flex; flex-wrap: wrap; gap: 8px; }
+        .receipt-preview { width: min(1100px, calc(100vw - 24px)); height: calc(100vh - 24px); height: calc(100dvh - 24px); max-height: none; padding: 0; border: 0; border-radius: 12px; background: #fff; color: #222; overflow: hidden; }
+        .receipt-preview[open] { display: flex; flex-direction: column; }
+        .receipt-preview:not([open]) { display: none; }
+        .receipt-preview.receipt-preview-fallback[open] { display: flex; position: fixed; inset: 12px; margin: auto; z-index: 1060; box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .75); }
+        .receipt-preview::backdrop { background: rgba(0, 0, 0, .75); }
+        .receipt-preview-header { flex: 0 0 auto; padding: 16px; background: #fff; border-bottom: 1px solid #ddd; }
+        .receipt-preview-body { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; background: #f3f4f6; }
+        .receipt-preview-loading { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; color: #57534e; text-align: center; }
+        .receipt-preview-status { height: 3em; line-height: 1.5; overflow: auto; margin: 8px 0 0; font-size: .875rem; }
+        .receipt-preview-help { margin: 0; padding: 12px 16px; background: #fff; font-size: .875rem; }
+        .receipt-preview-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .receipt-preview-title-row strong { min-width: 0; }
+        .receipt-preview-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .receipt-preview img { display: block; width: 100%; height: auto; -webkit-touch-callout: default; user-select: auto; -webkit-user-select: auto; }
+        @media (pointer: coarse) {
+            .summary-image-control .btn, .receipt-preview .btn { min-height: 44px; min-width: 44px; }
+            .summary-image-control .btn { flex: 1 1 auto; }
+            .receipt-preview-header { padding: 12px; padding-top: max(12px, env(safe-area-inset-top)); }
+        }
         .summary-image-note { flex-basis: 100%; font-size: 0.78rem; color: #f3f4f6; }
+        @media (max-width: 767.98px) {
+            #summaryModal .summary-header { display: grid !important; grid-template-columns: 1fr auto; gap: 12px; }
+            #summaryModal .summary-header > .modal-title { grid-column: 1; grid-row: 1; margin: 0; }
+            #summaryModal .summary-header > .btn-close { grid-column: 2; grid-row: 1; margin: 0; min-width: 28px; min-height: 28px; }
+            #summaryModal .summary-toolbar { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+            #summaryModal .summary-toolbar .summary-view-control { display: none; }
+            #summaryModal .summary-image-control { min-width: 0; }
+            #summaryModal .summary-image-control .btn { flex: 1 1 auto; min-height: 44px; }
+            #summaryModal .summary-save-control .btn { min-height: 44px; }
+            #summaryModal .summary-image-note { grid-column: 1 / -1; margin: 0; line-height: 1.5; }
+            .receipt-preview-header { padding: 12px; }
+            .receipt-preview-title-row { align-items: flex-start; }
+            .receipt-preview-title-row .btn { min-height: 44px; }
+            .receipt-preview-help { padding: 12px; }
+        }
 
         @media (max-width: 991.98px) {
             html,
@@ -2499,20 +2533,21 @@
                 <div class="modal-header summary-header border-0 bg-dark text-white d-flex flex-wrap align-items-center">
                     <h5 class="modal-title me-auto">สรุปยอดทริป</h5>
                     <div class="summary-toolbar me-3">
-                        <button class="btn btn-primary btn-sm fw-bold" @click="autoFit"><i class="fa-solid fa-expand me-1"></i>จัดพอดีจอ</button>
-                        <div class="btn-group" role="group">
+                        <button class="btn btn-primary btn-sm fw-bold summary-view-control" @click="autoFit"><i class="fa-solid fa-expand me-1"></i>จัดพอดีจอ</button>
+                        <div class="btn-group summary-view-control" role="group">
                             <button class="btn btn-outline-light btn-sm" @click="zoom(-0.1)"><i class="fa-solid fa-minus"></i></button>
                             <button class="btn btn-outline-light btn-sm" style="min-width: 60px;" @click="zoomLevel = 1">{{ Math.round(zoomLevel * 100) }}%</button>
                             <button class="btn btn-outline-light btn-sm" @click="zoom(0.1)"><i class="fa-solid fa-plus"></i></button>
                         </div>
                         <div class="summary-image-control">
-                            <button v-if="supportsReceiptCopy()" id="btnCopyReceipt" type="button" class="btn btn-primary btn-sm fw-bold" :disabled="receiptImageState !== 'ready' || isCopyingReceipt || !summaryIsOpen" @click="copyReceipt">
+                            <button id="btnOpenReceipt" type="button" class="btn btn-primary btn-sm fw-bold" :disabled="!summaryIsOpen" @click="openReceiptPreview">{{ receiptPlatform === 'desktop' ? 'เปิดรูป' : 'เปิดรูปเพื่อคัดลอก' }}</button>
+                            <button v-if="receiptPlatform === 'desktop' && supportsReceiptCopy()" id="btnCopyReceipt" type="button" class="btn btn-outline-light btn-sm fw-bold" :disabled="receiptImageState !== 'ready' || isCopyingReceipt || !summaryIsOpen" @click="copyReceipt">
                                 <i class="fa-regular fa-copy me-1"></i>{{ receiptImageState === 'preparing' ? 'กำลังเตรียมรูป…' : isCopyingReceipt ? 'กำลังคัดลอก…' : 'คัดลอกรูป' }}
                             </button>
                             <button v-if="receiptImageState === 'error'" type="button" class="btn btn-outline-light btn-sm" @click="refreshReceiptImage">ลองเตรียมรูปใหม่</button>
                         </div>
-                        <div class="btn-group" role="group">
-                            <button id="btnExport" type="button" class="btn btn-success btn-sm fw-bold dropdown-toggle" :disabled="isSavingReceipt" data-bs-toggle="dropdown">
+                        <div class="btn-group summary-save-control" role="group">
+                            <button id="btnExport" type="button" class="btn btn-outline-light btn-sm fw-bold dropdown-toggle" :disabled="isSavingReceipt" data-bs-toggle="dropdown">
                                 <i class="fa-solid fa-download me-1"></i>{{ isSavingReceipt ? 'กำลังสร้างภาพ…' : 'บันทึกภาพ' }}
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
@@ -2525,6 +2560,26 @@
                     </div>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
+                <dialog ref="receiptPreviewDialog" id="receiptImagePreview" class="receipt-preview" role="dialog" aria-modal="true" aria-labelledby="receiptPreviewTitle" aria-describedby="receiptPreviewHelp" @close="closeReceiptPreview" @cancel.prevent="closeReceiptPreview" @keydown.esc.prevent="closeReceiptPreview">
+                    <div class="receipt-preview-header">
+                        <div class="receipt-preview-title-row">
+                            <strong id="receiptPreviewTitle">รูปสรุปผลลัพธ์</strong>
+                            <div class="receipt-preview-actions">
+                                <button v-if="receiptPlatform === 'desktop' && supportsReceiptCopy()" id="btnCopyReceiptPreview" type="button" class="btn btn-primary btn-sm" :disabled="receiptImageState !== 'ready' || isCopyingReceipt || !summaryIsOpen" @click="copyReceipt">{{ isCopyingReceipt ? 'กำลังคัดลอก…' : 'คัดลอกรูป' }}</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @click="closeReceiptPreview">ปิดรูป</button>
+                            </div>
+                        </div>
+                        <p class="receipt-preview-status" role="status" aria-live="polite">{{ receiptPreviewMessage || receiptCopyMessage || (isPreparingReceiptPreview ? 'กำลังเตรียมรูป…' : receiptPlatform === 'desktop' ? 'รูปพร้อมคัดลอก' : 'กดค้างที่รูปด้านล่าง แล้วเลือกคัดลอกรูป') }}</p>
+                    </div>
+                    <div class="receipt-preview-body" :aria-busy="isPreparingReceiptPreview">
+                        <div v-if="!receiptPreviewUrl" class="receipt-preview-loading">
+                            <div v-if="isPreparingReceiptPreview">กำลังเตรียมรูปสรุป…</div>
+                            <button v-else type="button" class="btn btn-primary" @click="openReceiptPreview">ลองเปิดรูปใหม่</button>
+                        </div>
+                        <img v-else :src="receiptPreviewUrl" alt="ภาพสรุปรายการ ยอดรายคน และข้อมูลรับเงิน" @error="receiptPreviewMessage = 'แสดงรูปไม่ได้ กรุณาปิดรูปแล้วลองเปิดใหม่ หรือใช้บันทึกภาพ'">
+                        <p id="receiptPreviewHelp" class="receipt-preview-help">{{ receiptPreviewInstructions }}</p>
+                    </div>
+                </dialog>
                 <div class="modal-body summary-modal-body d-flex bg-secondary overflow-auto p-4" style="align-items:flex-start;justify-content:flex-start"> 
                     <div class="mobile-summary-view">
                         <div class="summary-total-card">
@@ -2717,9 +2772,10 @@
                 calculatorTarget: null, calculatorExpression: '',
                 summaryIsOpen: false, receiptImageState: 'idle', receiptImageBlob: null,
                 isCopyingReceipt: false, receiptCopyMessage: '',
+                receiptPreviewUrl: '', isPreparingReceiptPreview: false, receiptPreviewMessage: '', receiptPreviewRequest: 0,
                 receiptImageSignature: '', receiptImageGeneration: 0,
                 receiptPreparationMessage: '', receiptExportMessage: '', isSavingReceipt: false,
-                appVersion: 'v2.2.0', appStatus: 'summary-image-copy-release',
+                appVersion: 'v2.2.1', appStatus: 'mobile-image-preview-release',
                 payment: { type: 'qrcode', detail: '', name: '', bankName: '', qrImage: null },
                 showMemberInput: false, newPerson: '', editingMemberIdx: -1, tempMemberName: '',
                 editingIndex: null, editingShopIdx: -1, tempShopName: '', shopMemberMap: {},
@@ -2744,11 +2800,22 @@
             this.handleSummaryHidden();
         },
         computed: {
+            receiptPlatform() {
+                if (/iPad|iPhone|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+                return /Android/i.test(navigator.userAgent) ? 'android' : 'desktop';
+            },
+            receiptPreviewInstructions() {
+                if (this.receiptPlatform === 'ios') return 'iPhone / iPad: กดค้างที่รูปแล้วเลือก “คัดลอก” จากนั้นเปิดแชต LINE กดค้างในช่องข้อความแล้วเลือก “วาง” หากวางไม่ได้ ให้บันทึกไปยังรูปภาพ แล้วแนบจาก LINE';
+                if (this.receiptPlatform === 'android') return 'Android: กดค้างที่รูป แล้วเลือก “คัดลอกรูป” จากนั้นเปิด LINE และลองวางจากคลิปบอร์ดของแป้นพิมพ์ หากไม่มีรูปหรือวางไม่ได้ ให้บันทึกรูปแล้วแนบจาก LINE';
+                return 'กด “คัดลอกรูป” แล้วเปิดแชต LINE เพื่อวาง หรือคลิกขวา / กดค้างที่รูปเพื่อคัดลอกหรือบันทึกภาพ หากเบราว์เซอร์ในแอปไม่มีคำสั่งนี้ ให้เปิดเว็บใน Safari หรือ Chrome';
+            },
             receiptDataSignature() { return JSON.stringify(this.getCleanData()); },
             receiptFeedback() {
+                if (this.receiptPreviewMessage) return this.receiptPreviewMessage;
                 if (this.receiptCopyMessage || this.receiptPreparationMessage || this.receiptExportMessage) return this.receiptCopyMessage || this.receiptPreparationMessage || this.receiptExportMessage;
-                if (this.receiptImageState === 'ready' && this.supportsReceiptCopy()) return 'สำหรับ LINE บนคอม: กด “คัดลอกรูป” แล้วเปิดแชต LINE และกดวาง';
-                return this.receiptImageState === 'unsupported' ? 'เบราว์เซอร์นี้คัดลอกรูปไม่ได้ ใช้ “บันทึกภาพ” แทนได้' : '';
+                if (this.receiptPlatform !== 'desktop') return 'เปิดรูป → กดค้างที่ภาพ → คัดลอกรูป แล้ววางใน LINE';
+                if (this.receiptImageState === 'ready' && this.supportsReceiptCopy()) return this.receiptPlatform === 'desktop' ? 'คัดลอกรูปแล้วเปิด LINE เพื่อวาง หากวางไม่ได้ ลอง “เปิดรูป”' : 'คัดลอกรูปแล้วลองวางใน LINE หากไม่มีรูป ให้เลือก “เปิดรูป” เพื่อคัดลอกหรือบันทึกด้วยเมนูของเครื่อง';
+                return this.receiptImageState === 'unsupported' ? 'เบราว์เซอร์นี้คัดลอกอัตโนมัติไม่ได้ ลอง “เปิดรูป” แล้วกดค้างเพื่อคัดลอก หรือใช้ “บันทึกภาพ”' : '';
             },
             sumCustomAmount() { return Object.values(this.customAmounts).reduce((a, b) => a + (parseFloat(b) || 0), 0); },
             sumCustomPercent() { return Object.values(this.customPercents).reduce((a, b) => a + (parseFloat(b) || 0), 0); },
@@ -3358,11 +3425,13 @@
             handleSummaryHidden() {
                 this.summaryIsOpen = false;
                 this.receiptImageGeneration++;
+                this.closeReceiptPreview();
                 this.receiptImageBlob = null;
                 this.receiptImageSignature = '';
                 this.receiptImageState = 'idle';
             },
             handleWindowResize() {
+                if (this.$refs.receiptPreviewDialog?.hasAttribute('open')) return;
                 const summaryModal = document.getElementById('summaryModal');
                 if(summaryModal && summaryModal.classList.contains('show')) this.autoFit();
             },
@@ -3422,20 +3491,36 @@
             },
             refreshReceiptImage() {
                 this.receiptImageGeneration++;
+                this.closeReceiptPreview();
+                this.receiptPreviewMessage = '';
                 this.receiptImageBlob = null;
                 this.receiptImageSignature = '';
                 this.receiptPreparationMessage = '';
                 this.receiptCopyMessage = '';
                 if (!this.summaryIsOpen) { this.receiptImageState = 'idle'; return; }
                 if (!this.supportsReceiptCopy()) { this.receiptImageState = 'unsupported'; return; }
+                if (this.receiptPlatform !== 'desktop') { this.receiptImageState = 'idle'; return; }
                 this.prepareReceiptImage();
+            },
+            getReceiptPng() {
+                const signature = this.receiptDataSignature;
+                const generation = this.receiptImageGeneration;
+                if (this.receiptImageBlob && this.receiptImageSignature === signature) return Promise.resolve(this.receiptImageBlob);
+                const pending = this._receiptPngJob;
+                if (pending?.signature === signature && pending.generation === generation) return pending.promise;
+                const job = { signature, generation };
+                job.promise = this.renderReceiptBlob('png').finally(() => {
+                    if (this._receiptPngJob === job) this._receiptPngJob = null;
+                });
+                this._receiptPngJob = job;
+                return job.promise;
             },
             async prepareReceiptImage() {
                 const generation = this.receiptImageGeneration;
                 const signature = this.receiptDataSignature;
                 this.receiptImageState = 'preparing';
                 try {
-                    const blob = await this.renderReceiptBlob('png');
+                    const blob = await this.getReceiptPng();
                     if (generation !== this.receiptImageGeneration || !this.summaryIsOpen || signature !== this.receiptDataSignature) return;
                     this.receiptImageBlob = blob;
                     this.receiptImageSignature = signature;
@@ -3445,6 +3530,57 @@
                     this.receiptImageState = 'error';
                     this.receiptPreparationMessage = 'เตรียมรูปไม่สำเร็จ ลองเตรียมรูปใหม่ หรือใช้ “บันทึกภาพ”';
                 }
+            },
+            async openReceiptPreview() {
+                if (!this.summaryIsOpen || this.isPreparingReceiptPreview) return;
+                const dialog = this.$refs.receiptPreviewDialog;
+                if (dialog.hasAttribute('open') && this.receiptPreviewUrl) return;
+                const generation = this.receiptImageGeneration;
+                const signature = this.receiptDataSignature;
+                const request = ++this.receiptPreviewRequest;
+                if (!dialog.hasAttribute('open')) this._receiptPreviewTrigger = document.activeElement;
+                this.receiptPreviewMessage = '';
+                this.receiptCopyMessage = '';
+                this.isPreparingReceiptPreview = true;
+                try {
+                    if (!dialog.hasAttribute('open')) {
+                        if (typeof dialog.showModal === 'function') dialog.showModal();
+                        else {
+                            dialog.classList.add('receipt-preview-fallback');
+                            dialog.setAttribute('open', '');
+                            dialog.querySelector('button')?.focus({ preventScroll: true });
+                        }
+                    }
+                    await this.$nextTick();
+                    if (request !== this.receiptPreviewRequest || !this.summaryIsOpen || generation !== this.receiptImageGeneration || signature !== this.receiptDataSignature) return;
+                    const blob = await this.getReceiptPng();
+                    if (request !== this.receiptPreviewRequest || !this.summaryIsOpen || generation !== this.receiptImageGeneration || signature !== this.receiptDataSignature) return;
+                    this.receiptImageBlob = blob;
+                    this.receiptImageSignature = signature;
+                    this.receiptImageState = this.supportsReceiptCopy() ? 'ready' : 'unsupported';
+                    this.receiptPreviewUrl = URL.createObjectURL(blob);
+                } catch (error) {
+                    if (request === this.receiptPreviewRequest && this.summaryIsOpen && generation === this.receiptImageGeneration) this.receiptPreviewMessage = 'เปิดรูปไม่สำเร็จ ลองเปิดรูปใหม่ หรือใช้ “บันทึกภาพ”';
+                } finally {
+                    if (request === this.receiptPreviewRequest) this.isPreparingReceiptPreview = false;
+                }
+            },
+            closeReceiptPreview(event) {
+                const dialog = this.$refs.receiptPreviewDialog;
+                if (event?.type === 'close' && dialog?.open) return;
+                this.receiptPreviewRequest++;
+                this.isPreparingReceiptPreview = false;
+                const url = this.receiptPreviewUrl;
+                this.receiptPreviewUrl = '';
+                if (url) URL.revokeObjectURL(url);
+                const trigger = this._receiptPreviewTrigger;
+                this._receiptPreviewTrigger = null;
+                if (dialog?.hasAttribute('open')) {
+                    if (typeof dialog.close === 'function') dialog.close();
+                    else dialog.removeAttribute('open');
+                }
+                dialog?.classList.remove('receipt-preview-fallback');
+                if (this.summaryIsOpen && trigger?.isConnected) trigger.focus({ preventScroll: true });
             },
             copyReceipt() {
                 if (this.isCopyingReceipt || !this.summaryIsOpen || !this.supportsReceiptCopy()) return;
@@ -3462,7 +3598,7 @@
                     // Keep clipboard permission tied to this click, using the prepared image.
                     const operation = navigator.clipboard.write([item]);
                     Promise.resolve(operation).then(() => {
-                        if (this.summaryIsOpen && signature === this.receiptDataSignature) this.receiptCopyMessage = 'คัดลอกรูปแล้ว เปิดแชต LINE แล้วกดวางรูปได้เลย';
+                        if (this.summaryIsOpen && signature === this.receiptDataSignature) this.receiptCopyMessage = 'คัดลอกรูปแล้ว หากวางใน LINE ไม่ได้ ให้กด “เปิดรูป” แล้วกดค้างเพื่อคัดลอกรูปจากเบราว์เซอร์';
                     }).catch(() => {
                         if (this.summaryIsOpen) this.receiptCopyMessage = 'คัดลอกรูปไม่ได้ โปรดอนุญาตคลิปบอร์ดแล้วลองอีกครั้ง หรือใช้ “บันทึกภาพ”';
                     }).finally(() => { this.isCopyingReceipt = false; });
@@ -3493,8 +3629,12 @@
                         img.addEventListener('error', failed, { once: true });
                     });
                 }));
+                // Measure the unscaled receipt: the on-screen zoom must not shrink or crop the export.
+                const width = Math.max(el.scrollWidth, el.offsetWidth, 1);
+                const height = Math.max(el.scrollHeight, el.offsetHeight, 1);
+                const scale = this.receiptPlatform === 'desktop' ? 2 : Math.min(2, Math.sqrt(2900000 / (width * height)), 8192 / width, 8192 / height);
                 const canvas = await html2canvas(el, {
-                    scale: 2, useCORS: true, backgroundColor: '#f3f4f6',
+                    scale, useCORS: true, backgroundColor: '#f3f4f6',
                     onclone: clonedDocument => {
                         const receipt = clonedDocument.getElementById('captureArea');
                         receipt.style.transform = 'none';
