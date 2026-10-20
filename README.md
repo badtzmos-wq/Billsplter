@@ -2,7 +2,7 @@
 
 A lightweight, single-file bill splitting web app for group meals, trips, and shared expenses. BillSpliter helps users record members, shops, expenses, payment methods, and calculate who should pay or receive money after splitting the bill.
 
-> Current version: `v2.1.0`
+> Current version: `v2.2.0`
 > Author label: `Badtz.mos`
 
 ---
@@ -11,7 +11,7 @@ A lightweight, single-file bill splitting web app for group meals, trips, and sh
 
 BillSpliter is designed for quick shared-expense tracking without a backend. The app runs directly in the browser and stores data locally using `localStorage`. It supports member management, shop-based expense grouping, equal/custom split modes, payment information, backup/restore, and image export for the final receipt summary.
 
-Version `v2.1.0` makes shop context compact and expense entry prominent, adds calculator results directly to item prices and per-person shares, and fixes edit, deletion, member-rename, and stale split-state bugs. The web and PWA entry points now open `Billsplitter.html` and use a new release cache.
+Version `v2.2.0` adds copying the full summary image to the clipboard for pasting into LINE or other apps. JPG/PNG downloads remain available. Image preparation keeps the current zoom unchanged and refreshes when bill data changes. The release uses a new PWA cache.
 
 ---
 
@@ -75,6 +75,8 @@ Version `v2.1.0` makes shop context compact and expense entry prominent, adds ca
 
 ### Receipt Export
 
+- On desktop browsers that support image clipboard access, use **คัดลอกรูป** and paste into a LINE chat (Ctrl+V on Windows) without saving a file first.
+- The image is prepared when the summary opens and refreshed when bill data changes. Unsupported browsers can still use the save options below.
 - Export the summary receipt as `.JPG`.
 - Export the summary receipt as `.PNG`.
 - Uses `html2canvas` for image capture.
