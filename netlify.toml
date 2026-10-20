@@ -1,0 +1,4 @@
+# This repository deploys through GitHub Pages. Skip automatic Netlify builds
+# while the external Netlify GitHub App connection is being removed.
+[build]
+  ignore = "exit 0"

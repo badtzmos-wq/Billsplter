@@ -10,6 +10,7 @@ assert.equal(version, 'v2.1.0');
 assert.ok(app.includes(`<title>BillSpliter (Badtz.mos) ${version}</title>`));
 assert.ok(read('index.html').includes("window.location.replace('./Billsplitter.html')"));
 assert.equal(JSON.parse(read('manifest.webmanifest')).start_url, './Billsplitter.html');
+assert.match(read('netlify.toml'), /\[build\]\s+ignore\s*=\s*"exit 0"/);
 const handlers = {}, deleted = [], cached = [];
 let skipped = false, claimed = false;
 const current = 'billspliter-v2-1-0';

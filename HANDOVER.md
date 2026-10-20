@@ -38,3 +38,5 @@ No browser surface was available. jsdom verifies behavior and DOM state, not act
 Existing financial limitation remains outside this UI change: summary rounds each person's totals/net to whole baht. For a 100-baht equal split among three people, one payer, rounded net balances can sum to 1 baht rather than zero. The smoke balance fixture uses two people and exact shares; it does not establish settlement accuracy for fractional/uneven shares.
 
 Production is GitHub Pages at https://badtzmos-wq.github.io/Billsplter/, built automatically from `main` at `/`. After merge, verify the Pages deployment uses the merged commit, then verify the live index, app version, manifest and service worker against the source. See `DEPLOY_WEBAPP.md`.
+
+Netlify is excluded from the release workflow. `netlify.toml` skips automatic Git-triggered builds. GitHub App access is managed outside the repository; the available API session cannot remove that installation, so repository access must also be removed in GitHub Settings to eliminate Netlify check reporting completely. This skip rule does not disable direct Netlify build hooks/manual deployments.

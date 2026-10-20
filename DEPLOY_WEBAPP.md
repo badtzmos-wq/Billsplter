@@ -10,19 +10,11 @@ GitHub Pages ใช้ branch `main` จากโฟลเดอร์ `/` เ�
 
 `index.html` และ PWA ชี้ไปยัง `Billsplitter.html` โดย cache ใช้ชื่อ `billspliter-v2-1-0` สำหรับเวอร์ชันนี้
 
-## ทางเลือก: Netlify แบบลากวาง
+## การเชื่อมต่อเดิม
 
-1. เปิด https://app.netlify.com/drop
-2. ลากทั้งโฟลเดอร์ `BillSpliter_V2.0.1` ไปวาง
-3. รอ Netlify สร้างลิงก์ `.netlify.app`
-4. เปิดลิงก์นั้นบนมือถือ
-5. กด Add to Home Screen
+หยุด auto-build ของ Netlify ด้วย `netlify.toml` แล้ว การถอนการเชื่อมต่อภายนอกให้หมดต้องเปิด https://github.com/settings/installations เลือก Netlify > Configure และนำ repo `Billsplter` ออกจากรายการที่อนุญาตให้เข้าถึง โดยทำเฉพาะ repo นี้เพื่อไม่กระทบโปรเจกต์อื่น
 
-หลัง deploy แล้ว URL หลักคือ:
-
-```text
-https://your-site-name.netlify.app/
-```
+หลังถอนการเชื่อมต่อแล้วจึงลบไฟล์ `netlify.toml` ได้ การตั้งค่านี้ไม่หยุด build hook หรือ manual deploy ที่สั่งจาก Netlify โดยตรง
 
 ## iPhone
 
